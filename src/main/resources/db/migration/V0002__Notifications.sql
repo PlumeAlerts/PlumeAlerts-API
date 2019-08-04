@@ -1,0 +1,82 @@
+ALTER TABLE user_access_token
+    ADD LAST_VALIDATED TIMESTAMP DEFAULT now();
+
+ALTER TABLE users
+    DROP COLUMN LAST_VALIDATED;
+
+INSERT INTO scopes
+VALUES ('chat:read'),
+       ('bits:read'),
+       ('channel:read:subscriptions'),
+       ('channel_subscriptions');
+
+UPDATE users
+SET refresh_login = true;
+
+CREATE TABLE twitch_followers
+(
+    CHANNEL_ID        VARCHAR(36) NOT NULL,
+    FOLLOWER_ID       VARCHAR(36) NOT NULL,
+
+    FOLLOWER_USERNAME VARCHAR(25) NOT NULL,
+    IS_FOLLOWING      BOOLEAN     NOT NULL,
+    FOLLOWED_AT       TIMESTAMP,
+
+    PRIMARY KEY (CHANNEL_ID, FOLLOWER_ID, FOLLOWED_AT),
+    FOREIGN KEY (CHANNEL_ID) REFERENCES users (ID)
+);
+
+CREATE TABLE twitch_bits
+(
+    MESSAGE_ID       VARCHAR(36),
+
+    ANONYMOUS        BOOLEAN     NOT NULL,
+    MESSAGE          TEXT,
+    MESSAGE_USER_ID  VARCHAR(36),
+    MESSAGE_USERNAME VARCHAR(25),
+    BITS_USED        INT         NOT NULL,
+    TOTAL_BITS       INT         NOT NULL,
+    TIME             TIMESTAMP   NOT NULL,
+
+    CHANNEL_ID       VARCHAR(36) NOT NULL,
+
+    PRIMARY KEY (MESSAGE_ID),
+    FOREIGN KEY (CHANNEL_ID) REFERENCES users (ID)
+);
+
+CREATE TABLE twitch_subscriptions
+(
+    CHANNEL_ID             VARCHAR(36) NOT NULL,
+    RECIPIENT_ID           VARCHAR(36) NOT NULL,
+    TIME                   TIMESTAMP   NOT NULL,
+
+    RECIPIENT_USERNAME     VARCHAR(25) NOT NULL,
+    RECIPIENT_DISPLAY_NAME VARCHAR(36) NOT NULL,
+
+    SUB_PLAN               TEXT        NOT NULL,
+    CUMULATIVE_MONTHS      INT         NOT NULL,
+    STREAK_MONTHS          INT         NOT NULL,
+    CONTEXT                TEXT        NOT NULL,
+    MESSAGE                TEXT,
+
+    PRIMARY KEY (CHANNEL_ID, RECIPIENT_ID, TIME),
+    FOREIGN KEY (CHANNEL_ID) REFERENCES users (ID)
+);
+
+CREATE TABLE twitch_subscriptions_gift
+(
+    CHANNEL_ID          VARCHAR(36) NOT NULL,
+    RECIPIENT_ID        VARCHAR(36) NOT NULL,
+    TIME                TIMESTAMP   NOT NULL,
+
+    RECIPIENT_USERNAME  VARCHAR(25) NOT NULL,
+    SUB_PLAN            TEXT        NOT NULL,
+    ANONYMOUS           BOOLEAN     NOT NULL,
+
+    GIFTER_ID           VARCHAR(36),
+    GIFTER_USERNAME     VARCHAR(25),
+    GIFTER_DISPLAY_NAME VARCHAR(36),
+
+    PRIMARY KEY (CHANNEL_ID, RECIPIENT_ID, TIME),
+    FOREIGN KEY (CHANNEL_ID) REFERENCES users (ID)
+);

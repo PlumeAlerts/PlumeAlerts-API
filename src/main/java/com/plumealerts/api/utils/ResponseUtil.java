@@ -1,7 +1,7 @@
 package com.plumealerts.api.utils;
 
-import com.plumealerts.api.endpoints.response.error.ErrorResponse;
-import com.plumealerts.api.endpoints.response.error.ErrorType;
+import com.plumealerts.api.v1.domain.error.ErrorResponse;
+import com.plumealerts.api.v1.domain.error.ErrorType;
 import org.apache.http.HttpStatus;
 import spark.ModelAndView;
 import spark.Response;
@@ -16,6 +16,7 @@ public class ResponseUtil {
 
     }
 
+    //TODO Remove
     public static String redirect(Response response, String url) {
         return redirect(response, url, HttpStatus.SC_SEE_OTHER);
     }

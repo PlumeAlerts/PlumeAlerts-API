@@ -1,4 +1,4 @@
-package com.plumealerts.api.utils;
+package com.plumealerts.api;
 
 public class Constants {
 

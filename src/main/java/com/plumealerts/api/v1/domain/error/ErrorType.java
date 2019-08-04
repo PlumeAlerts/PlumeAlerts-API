@@ -1,12 +1,11 @@
-package com.plumealerts.api.endpoints.response.error;
+package com.plumealerts.api.v1.domain.error;
 
 import org.apache.http.HttpStatus;
 
 public enum ErrorType {
 
     INTERNAL_SERVER_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error"),
-    BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "Bad Request"),
-    ;
+    BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "Bad Request");
 
     int code;
     String error;

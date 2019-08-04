@@ -5,6 +5,8 @@ package com.plumealerts.api.db;
 
 
 import com.plumealerts.api.db.tables.Scopes;
+import com.plumealerts.api.db.tables.TwitchBits;
+import com.plumealerts.api.db.tables.TwitchFollowers;
 import com.plumealerts.api.db.tables.UserAccessToken;
 import com.plumealerts.api.db.tables.UserLoginRequest;
 import com.plumealerts.api.db.tables.Users;
@@ -34,6 +36,8 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     public static final Index SCOPES_PKEY = Indexes0.SCOPES_PKEY;
+    public static final Index TWITCH_BITS_PKEY = Indexes0.TWITCH_BITS_PKEY;
+    public static final Index TWITCH_FOLLOWERS_PKEY = Indexes0.TWITCH_FOLLOWERS_PKEY;
     public static final Index USER_ACCESS_TOKEN_PKEY = Indexes0.USER_ACCESS_TOKEN_PKEY;
     public static final Index USER_LOGIN_REQUEST_PKEY = Indexes0.USER_LOGIN_REQUEST_PKEY;
     public static final Index USERS_PKEY = Indexes0.USERS_PKEY;
@@ -44,6 +48,8 @@ public class Indexes {
 
     private static class Indexes0 {
         public static Index SCOPES_PKEY = Internal.createIndex("scopes_pkey", Scopes.SCOPES, new OrderField[] { Scopes.SCOPES.SCOPE }, true);
+        public static Index TWITCH_BITS_PKEY = Internal.createIndex("twitch_bits_pkey", TwitchBits.TWITCH_BITS, new OrderField[] { TwitchBits.TWITCH_BITS.MESSAGE_ID }, true);
+        public static Index TWITCH_FOLLOWERS_PKEY = Internal.createIndex("twitch_followers_pkey", TwitchFollowers.TWITCH_FOLLOWERS, new OrderField[] { TwitchFollowers.TWITCH_FOLLOWERS.CHANNEL_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWER_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWED_AT }, true);
         public static Index USER_ACCESS_TOKEN_PKEY = Internal.createIndex("user_access_token_pkey", UserAccessToken.USER_ACCESS_TOKEN, new OrderField[] { UserAccessToken.USER_ACCESS_TOKEN.USER_ID }, true);
         public static Index USER_LOGIN_REQUEST_PKEY = Internal.createIndex("user_login_request_pkey", UserLoginRequest.USER_LOGIN_REQUEST, new OrderField[] { UserLoginRequest.USER_LOGIN_REQUEST.STATE, UserLoginRequest.USER_LOGIN_REQUEST.CREATED_AT }, true);
         public static Index USERS_PKEY = Internal.createIndex("users_pkey", Users.USERS, new OrderField[] { Users.USERS.ID }, true);
