@@ -1,41 +1,56 @@
 package com.plumealerts.api.twitch;
 
-import com.plumealerts.api.PlumeAlertsAPI;
-import com.plumealerts.api.twitch.helix.HelixAPI;
-import com.plumealerts.api.twitch.oauth2.OAuth2API;
-import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.common.feign.interceptor.TwitchClientIdInterceptor;
+import com.github.twitch4j.helix.TwitchHelix;
+import com.github.twitch4j.helix.TwitchHelixErrorDecoder;
+import com.netflix.config.ConfigurationManager;
+import com.plumealerts.api.twitch.oauth2.TwitchOAuth2;
+import feign.Feign;
+import feign.Logger;
+import feign.Request;
+import feign.Retryer;
+import feign.hystrix.HystrixFeign;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 
 public class TwitchAPI {
 
-    private static HelixAPI helixAPI;
-    private static OAuth2API oAuth2API;
+    private static TwitchHelix helixAPI;
+    private static TwitchOAuth2 oAuth2API;
 
     private TwitchAPI() {
-
     }
 
-    public static HelixAPI helix() {
+    public static TwitchHelix helix() {
         if (helixAPI == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.twitch.tv/helix/")
-                    .addConverterFactory(MoshiConverterFactory.create(PlumeAlertsAPI.moshi))
-                    .build();
-
-            helixAPI = retrofit.create(HelixAPI.class);
+            helixAPI = TwitchClientBuilder.builder()
+                    .withEnableHelix(true)
+                    .build().getHelix();
         }
 
         return helixAPI;
     }
 
-    public static OAuth2API oAuth2() {
+    public static TwitchOAuth2 oAuth2() {
         if (oAuth2API == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://id.twitch.tv/")
-                    .addConverterFactory(MoshiConverterFactory.create(PlumeAlertsAPI.moshi))
-                    .build();
+            ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", 5000);
 
-            oAuth2API = retrofit.create(OAuth2API.class);
+            // Jackson ObjectMapper
+            ObjectMapper mapper = new ObjectMapper();
+            // - Modules
+            mapper.findAndRegisterModules();
+
+            // Feign
+            oAuth2API = HystrixFeign.builder()
+                    .encoder(new JacksonEncoder(mapper))
+                    .decoder(new JacksonDecoder(mapper))
+                    .logger(new Logger.ErrorLogger())
+                    .errorDecoder(new TwitchHelixErrorDecoder(new JacksonDecoder()))
+                    .retryer(new Retryer.Default(1, 10000, 3))
+                    .options(new Request.Options(5000, 15000))
+                    .target(TwitchOAuth2.class, "https://id.twitch.tv/oauth2");
         }
 
         return oAuth2API;

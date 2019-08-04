@@ -1,24 +1,23 @@
-package com.plumealerts.api.twitch.oauth2.response;
+package com.plumealerts.api.twitch.oauth2.domain;
 
-import com.squareup.moshi.Json;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.sql.Timestamp;
 
-public class ResponseAuthorizationCode {
-
-    @Json(name = "access_token")
+public class Token {
+    @JsonProperty("access_token")
     private String accessToken;
 
-    @Json(name = "expires_in")
+    @JsonProperty("expires_in")
     private int expiresIn;
 
-    @Json(name = "refresh_token")
+    @JsonProperty("refresh_token")
     private String refreshToken;
 
-    @Json(name = "scope")
+    @JsonProperty("scope")
     private String[] scope;
 
-    @Json(name = "token_type")
+    @JsonProperty("token_type")
     private String tokenType;
 
     public String getAccessToken() {
@@ -26,7 +25,7 @@ public class ResponseAuthorizationCode {
     }
 
     public Timestamp getExpire() {
-        return new Timestamp(System.currentTimeMillis() + expiresIn * 1000);
+        return new Timestamp(System.currentTimeMillis() + (expiresIn * 900));
     }
 
     public String getRefreshToken() {

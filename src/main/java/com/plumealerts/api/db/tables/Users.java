@@ -9,7 +9,6 @@ import com.plumealerts.api.db.Keys;
 import com.plumealerts.api.db.Public;
 import com.plumealerts.api.db.tables.records.UsersRecord;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Users extends TableImpl<UsersRecord> {
 
-    private static final long serialVersionUID = -359574767;
+    private static final long serialVersionUID = -2117621223;
 
     /**
      * The reference instance of <code>public.users</code>
@@ -100,11 +99,6 @@ public class Users extends TableImpl<UsersRecord> {
      * The column <code>public.users.refresh_login</code>.
      */
     public final TableField<UsersRecord, Boolean> REFRESH_LOGIN = createField("refresh_login", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
-     * The column <code>public.users.last_validated</code>.
-     */
-    public final TableField<UsersRecord, Timestamp> LAST_VALIDATED = createField("last_validated", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.users</code> table reference

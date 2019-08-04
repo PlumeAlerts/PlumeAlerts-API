@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserAccessToken extends TableImpl<UserAccessTokenRecord> {
 
-    private static final long serialVersionUID = -1757877868;
+    private static final long serialVersionUID = -1827221978;
 
     /**
      * The reference instance of <code>public.user_access_token</code>
@@ -75,6 +75,11 @@ public class UserAccessToken extends TableImpl<UserAccessTokenRecord> {
      * The column <code>public.user_access_token.expired_at</code>.
      */
     public final TableField<UserAccessTokenRecord, Timestamp> EXPIRED_AT = createField("expired_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
+
+    /**
+     * The column <code>public.user_access_token.last_validated</code>.
+     */
+    public final TableField<UserAccessTokenRecord, Timestamp> LAST_VALIDATED = createField("last_validated", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.user_access_token</code> table reference

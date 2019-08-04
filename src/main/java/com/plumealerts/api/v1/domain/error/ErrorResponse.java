@@ -1,4 +1,4 @@
-package com.plumealerts.api.endpoints.response.error;
+package com.plumealerts.api.v1.domain.error;
 
 public class ErrorResponse {
     private final ErrorType error;

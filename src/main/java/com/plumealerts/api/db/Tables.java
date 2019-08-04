@@ -5,6 +5,10 @@ package com.plumealerts.api.db;
 
 
 import com.plumealerts.api.db.tables.Scopes;
+import com.plumealerts.api.db.tables.TwitchBits;
+import com.plumealerts.api.db.tables.TwitchFollowers;
+import com.plumealerts.api.db.tables.TwitchSubscriptions;
+import com.plumealerts.api.db.tables.TwitchSubscriptionsGift;
 import com.plumealerts.api.db.tables.UserAccessToken;
 import com.plumealerts.api.db.tables.UserLoginRequest;
 import com.plumealerts.api.db.tables.Users;
@@ -29,6 +33,26 @@ public class Tables {
      * The table <code>public.scopes</code>.
      */
     public static final Scopes SCOPES = com.plumealerts.api.db.tables.Scopes.SCOPES;
+
+    /**
+     * The table <code>public.twitch_bits</code>.
+     */
+    public static final TwitchBits TWITCH_BITS = com.plumealerts.api.db.tables.TwitchBits.TWITCH_BITS;
+
+    /**
+     * The table <code>public.twitch_followers</code>.
+     */
+    public static final TwitchFollowers TWITCH_FOLLOWERS = com.plumealerts.api.db.tables.TwitchFollowers.TWITCH_FOLLOWERS;
+
+    /**
+     * The table <code>public.twitch_subscriptions</code>.
+     */
+    public static final TwitchSubscriptions TWITCH_SUBSCRIPTIONS = com.plumealerts.api.db.tables.TwitchSubscriptions.TWITCH_SUBSCRIPTIONS;
+
+    /**
+     * The table <code>public.twitch_subscriptions_gift</code>.
+     */
+    public static final TwitchSubscriptionsGift TWITCH_SUBSCRIPTIONS_GIFT = com.plumealerts.api.db.tables.TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT;
 
     /**
      * The table <code>public.user_access_token</code>.
