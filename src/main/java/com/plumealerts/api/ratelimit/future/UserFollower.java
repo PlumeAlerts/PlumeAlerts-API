@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserFollower extends FutureRequest {
+public class UserFollower implements FutureRequest {
     private final String userId;
     private final String token;
     private String cursor;

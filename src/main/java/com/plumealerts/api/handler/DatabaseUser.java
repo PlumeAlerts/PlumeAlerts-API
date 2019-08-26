@@ -17,7 +17,9 @@ public class DatabaseUser {
     }
 
     public static UsersRecord findUser(String userId) {
-        return PlumeAlertsAPI.dslContext().selectFrom(USERS).where(USERS.ID.eq(userId)).fetchOne();
+        return PlumeAlertsAPI.dslContext().selectFrom(USERS)
+                .where(USERS.ID.eq(userId))
+                .fetchOne();
     }
 
     public static boolean updateUser(User user) {

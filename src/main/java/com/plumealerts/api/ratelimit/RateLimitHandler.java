@@ -7,10 +7,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RequestHandler {
+public class RateLimitHandler {
     public static final Queue<FutureRequest> REQUEST_QUEUE = new ConcurrentLinkedQueue<>();
 
-    public RequestHandler() {
+    public RateLimitHandler() {
         TimedSemaphore sem = new TimedSemaphore(1, TimeUnit.MINUTES, 700/*Buffer*/);
         RequestThread thread = new RequestThread(sem);
         thread.start();
