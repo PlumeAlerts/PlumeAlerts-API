@@ -2,12 +2,10 @@ package com.plumealerts.api.twitch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.common.feign.interceptor.TwitchClientIdInterceptor;
 import com.github.twitch4j.helix.TwitchHelix;
 import com.github.twitch4j.helix.TwitchHelixErrorDecoder;
 import com.netflix.config.ConfigurationManager;
 import com.plumealerts.api.twitch.oauth2.TwitchOAuth2;
-import feign.Feign;
 import feign.Logger;
 import feign.Request;
 import feign.Retryer;
@@ -37,12 +35,9 @@ public class TwitchAPI {
         if (oAuth2API == null) {
             ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", 5000);
 
-            // Jackson ObjectMapper
             ObjectMapper mapper = new ObjectMapper();
-            // - Modules
             mapper.findAndRegisterModules();
 
-            // Feign
             oAuth2API = HystrixFeign.builder()
                     .encoder(new JacksonEncoder(mapper))
                     .decoder(new JacksonDecoder(mapper))

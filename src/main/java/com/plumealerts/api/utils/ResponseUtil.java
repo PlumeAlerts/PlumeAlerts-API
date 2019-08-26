@@ -1,37 +1,19 @@
 package com.plumealerts.api.utils;
 
+import com.jsoniter.output.JsonStream;
 import com.plumealerts.api.v1.domain.error.ErrorResponse;
 import com.plumealerts.api.v1.domain.error.ErrorType;
-import org.apache.http.HttpStatus;
-import spark.ModelAndView;
-import spark.Response;
-import spark.template.mustache.MustacheTemplateEngine;
-
-import java.util.HashMap;
-import java.util.Map;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 
 public class ResponseUtil {
 
     private ResponseUtil() {
-
     }
 
-    //TODO Remove
-    public static String redirect(Response response, String url) {
-        return redirect(response, url, HttpStatus.SC_SEE_OTHER);
-    }
-
-    public static String redirect(Response response, String url, int code) {
-        response.status(code);
-        response.header("Location", url);
-
-        Map<String, String> model = new HashMap<>();
-        model.put("redirect", url);
-        return new MustacheTemplateEngine().render(new ModelAndView(model, "redirect.mustache"));
-    }
-
-    public static ErrorResponse errorResponse(Response response, ErrorType errorType, String message) {
-        response.status(errorType.getCode());
-        return new ErrorResponse(errorType, message);
+    public static void errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {
+        exchange.setStatusCode(errorType.getCode());
+        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+        exchange.getResponseSender().send(JsonStream.serialize(new ErrorResponse(errorType, message)));
     }
 }

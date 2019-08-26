@@ -1,53 +1,56 @@
 package com.plumealerts.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plumealerts.api.ratelimit.RequestHandler;
+import com.networknt.handler.HandlerProvider;
+import com.networknt.health.HealthGetHandler;
+import com.networknt.info.ServerInfoGetHandler;
+import com.plumealerts.api.ratelimit.RateLimitHandler;
 import com.plumealerts.api.v1.TwitchAuth;
 import com.zaxxer.hikari.HikariDataSource;
+import io.undertow.Handlers;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.RoutingHandler;
+import io.undertow.util.Methods;
 import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import spark.Spark;
 
-public class PlumeAlertsAPI {
+public class PlumeAlertsAPI implements HandlerProvider {
     private static DSLContext dslContext;
-    private static RequestHandler requestHandler;
-    private static ObjectMapper mapper;
+    private static RateLimitHandler requestHandler;
 
-    public static void main(String[] args) {
-        new PlumeAlertsAPI().start();
-    }
-
-    public void start() {
+    public void setup() {
         System.getProperties().setProperty("org.jooq.no-logo", "true");
 
         HikariDataSource ds = new HikariDataSource();
-        ds.setJdbcUrl(Constants.DB_URL);
+        ds.setJdbcUrl(Constants.DB_HOSTNAME);
         ds.setUsername(Constants.DB_USERNAME);
         ds.setPassword(Constants.DB_PASSWORD);
+        ds.setConnectionInitSql("set time zone 'UTC'");
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
 
-        PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES_9_5);
-
-        Spark.path("/v1", () -> Spark.path("/auth/twitch", TwitchAuth::new));
+        PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES_10);
     }
 
-    public static RequestHandler request() {
+    @Override
+    public HttpHandler getHandler() {
+        this.setup();
+        RoutingHandler routing = Handlers.routing();
+        routing.addAll(new TwitchAuth());
+        routing.add(Methods.GET, "/health", new HealthGetHandler());
+        routing.add(Methods.GET, "/server/info", new ServerInfoGetHandler());
+        HttpHandler handler = routing;
+        return handler;
+    }
+
+    public static RateLimitHandler request() {
         if (requestHandler == null) {
-            requestHandler = new RequestHandler();
+            requestHandler = new RateLimitHandler();
         }
         return requestHandler;
     }
 
-    public static ObjectMapper mapper(){
-        if(mapper == null){
-            mapper = new ObjectMapper();
-        }
-
-        return mapper;
-    }
     public static DSLContext dslContext() {
         return dslContext;
     }

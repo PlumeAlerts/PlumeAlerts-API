@@ -3,6 +3,7 @@ package com.plumealerts.api.v1;
 
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.plumealerts.api.Constants;
 import com.plumealerts.api.PlumeAlertsAPI;
 import com.plumealerts.api.db.tables.records.ScopesRecord;
@@ -16,20 +17,20 @@ import com.plumealerts.api.twitch.oauth2.domain.Token;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.Validate;
 import com.plumealerts.api.v1.domain.error.ErrorType;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.RoutingHandler;
 import org.apache.http.client.utils.URIBuilder;
 import org.jooq.Result;
-import spark.Request;
-import spark.Response;
 
 import java.net.URISyntaxException;
+import java.util.Deque;
 import java.util.StringJoiner;
 import java.util.UUID;
 
 import static com.plumealerts.api.db.Tables.SCOPES;
 import static com.plumealerts.api.db.Tables.USER_LOGIN_REQUEST;
-import static spark.Spark.get;
 
-public class TwitchAuth {
+public class TwitchAuth extends RoutingHandler {
     private String scopes;
 
     public TwitchAuth() {
@@ -42,29 +43,23 @@ public class TwitchAuth {
             joiner.add(scope.getScope());
         }
         this.scopes = joiner.toString();
-        get("/login", this::login, PlumeAlertsAPI.mapper()::writeValueAsString);
-        get("/response", this::response, PlumeAlertsAPI.mapper()::writeValueAsString);
+        this.get("/v1/auth/twitch/login", this::login);
+        this.get("/v1/auth/twitch/response", this::response);
     }
 
-    public Object login(Request request, Response response) {
-//        String userId = request.session().attribute("userId");
-//        UsersRecord user = UserHandler.findUser(userId);
-//        if (user != null && !user.getRefreshLogin()) {
-//            UserAccessTokenRecord userAccessToken = UserAccessTokensHandler.getAccessToken(userId);
-//            if (userAccessToken != null)
-//                return ResponseUtil.redirect(response, "/dashboard");
-//        }
 
+    private void login(HttpServerExchange exchange) {
         String state = UUID.randomUUID().toString().replace("-", "");
         URIBuilder ub;
         try {
             ub = new URIBuilder("https://id.twitch.tv/oauth2/authorize");
         } catch (URISyntaxException e) {
             e.printStackTrace();
-            return ResponseUtil.errorResponse(response, ErrorType.INTERNAL_SERVER_ERROR, null);
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, null);
+            return;
         }
-        ub.addParameter("client_id", Constants.CLIENT_ID);
-        ub.addParameter("redirect_uri", Constants.CLIENT_REDIRECT);
+        ub.addParameter("client_id", Constants.TWITCH_CLIENT_ID);
+        ub.addParameter("redirect_uri", Constants.TWITCH_CLIENT_REDIRECT);
         ub.addParameter("state", state);
         ub.addParameter("scope", this.scopes.replace("+", " "));
         ub.addParameter("response_type", "code");
@@ -74,49 +69,73 @@ public class TwitchAuth {
                 .values(state, this.scopes)
                 .execute();
         if (i != 1) {
-            return ResponseUtil.errorResponse(response, ErrorType.INTERNAL_SERVER_ERROR, null);
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, null);
+            return;
         }
 
-        return ResponseUtil.redirect(response, url);
+        exchange.setStatusCode(200);
+        exchange.getResponseSender().send(url);
     }
 
-    public Object response(Request request, Response response) {
-        String code = request.queryParams("code");
-        String state = request.queryParams("state");
-        String scope = request.queryParams("scope");
+    private void response(HttpServerExchange exchange) {
+        Deque<String> dequeCode = exchange.getQueryParameters().get("code");
+        Deque<String> dequeState = exchange.getQueryParameters().get("state");
 
-        if (scope == null) {
-            return ResponseUtil.errorResponse(response, ErrorType.BAD_REQUEST, "Scope is required");
+        if (dequeCode == null || dequeCode.peek() == null) {
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "Code is required");
+            return;
         }
+        if (dequeState == null || dequeState.peek() == null) {
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State is required");
+            return;
+        }
+        String code = dequeCode.peek();
+        String state = dequeState.peek();
 
         if (!Validate.isAlphanumericAndLength(code, 30)) {
-            return ResponseUtil.errorResponse(response, ErrorType.BAD_REQUEST, "Code must be alphanumerical and 30 characters long");
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "Code must be alphanumerical and 30 characters long");
+            return;
         }
 
         if (!Validate.isAlphanumericAndLength(state, 32)) {
-            return ResponseUtil.errorResponse(response, ErrorType.BAD_REQUEST, "State must be alphanumerical and 30 characters long");
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State must be alphanumerical and 30 characters long");
+            return;
         }
         UserLoginRequestRecord loginRequestRecord = PlumeAlertsAPI.dslContext().selectFrom(USER_LOGIN_REQUEST)
                 .where(USER_LOGIN_REQUEST.STATE.eq(state))
                 .fetchOne();
 
         if (loginRequestRecord == null) {
-            return ResponseUtil.errorResponse(response, ErrorType.BAD_REQUEST, "The state is invalid");
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "The state is invalid");
+            return;
         }
 
         // Expire state after 30 minutes, force them to login in again.
         if ((System.currentTimeMillis() - loginRequestRecord.getCreatedAt().getTime()) > 1000 * 60 * 30) {
-            return ResponseUtil.errorResponse(response, ErrorType.BAD_REQUEST, "State has expired");
+            ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State has expired");
+            return;
         }
-        Token userToken = TwitchAPI.oAuth2().authCode(Constants.CLIENT_ID, Constants.CLIENT_SECRET, code, Constants.CLIENT_REDIRECT).execute();
-
+        Token userToken;
+        try {
+            userToken = TwitchAPI.oAuth2().authCode(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, code, Constants.TWITCH_CLIENT_REDIRECT).execute();
+        } catch (HystrixRuntimeException e) {
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
+        }
         if (userToken == null) {
-            return ResponseUtil.errorResponse(response, ErrorType.INTERNAL_SERVER_ERROR, "");
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
         }
-
-        UserList users = TwitchAPI.helix().getUsers(userToken.getAccessToken(), null, null).execute();
-        if (users.getUsers() == null || users.getUsers().size() != 1) {
-            return ResponseUtil.errorResponse(response, ErrorType.INTERNAL_SERVER_ERROR, "");
+        UserList users;
+        try {
+            users = TwitchAPI.helix().getUsers(userToken.getAccessToken(), null, null).execute();
+        } catch (HystrixRuntimeException e) {
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
+        }
+        if (users == null || users.getUsers() == null || users.getUsers().size() != 1) {
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
         }
         User user = users.getUsers().get(0);
         String userId = user.getId().toString();
@@ -132,7 +151,8 @@ public class TwitchAuth {
             }
             if (!usersRecord.getId().equalsIgnoreCase(userId)) {
                 //TODO MAJOR ISSUE
-                return ResponseUtil.errorResponse(response, ErrorType.INTERNAL_SERVER_ERROR, "");
+                ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+                return;
             }
 
             DatabaseUser.updateUser(user);
@@ -146,6 +166,9 @@ public class TwitchAuth {
             DatabaseUserAccessTokens.updateAccessToken(userId, userToken);
         }
 
-        return ResponseUtil.redirect(response, "/dashboard");
+        exchange.setStatusCode(200);
+        exchange.getResponseSender().send("DONE");
+//        return ResponseUtil.redirect(response, "/dashboard");
     }
+
 }

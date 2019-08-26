@@ -23,29 +23,39 @@ public class DatabaseUserAccessTokens {
     }
 
     public static UserAccessTokenRecord getAccessToken(String userId) {
+        return getAccessToken(userId, true);
+    }
+
+    public static UserAccessTokenRecord getAccessToken(String userId, boolean validateToken) {
         UserAccessTokenRecord accessTokenRecord = PlumeAlertsAPI.dslContext().selectFrom(USER_ACCESS_TOKEN).where(USER_ACCESS_TOKEN.USER_ID.eq(userId)).fetchOne();
 
-        Validate validate = TwitchAPI.oAuth2().validate(accessTokenRecord.getAccessToken()).execute();
-        if (validate == null) {
-            //TODO Probably wrong and add buffer
-            if (accessTokenRecord.getExpiredAt().getTime() <= System.currentTimeMillis()) {
-                RefreshToken refreshToken = TwitchAPI.oAuth2().refresh(Constants.CLIENT_ID, Constants.CLIENT_SECRET, accessTokenRecord.getRefreshToken()).execute();
-                if (refreshToken != null) {
-                    return updateAccessToken(userId, refreshToken, false);
-                }
+        if (validateToken) {
+            Validate validate = null;
+            try {
+                validate = TwitchAPI.oAuth2().validate(accessTokenRecord.getAccessToken()).execute();
+            } catch (UnsupportedOperationException e) {
+
             }
-            PlumeAlertsAPI.dslContext().update(USERS)
-                    .set(USERS.REFRESH_LOGIN, true)
-                    .where(USERS.ID.eq(userId))
+            if (validate == null) {
+                //TODO Probably wrong and add buffer
+                if (accessTokenRecord.getExpiredAt().getTime() <= System.currentTimeMillis()) {
+                    RefreshToken refreshToken = TwitchAPI.oAuth2().refresh(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, accessTokenRecord.getRefreshToken()).execute();
+                    if (refreshToken != null) {
+                        return updateAccessToken(userId, refreshToken, false);
+                    }
+                }
+                PlumeAlertsAPI.dslContext().update(USERS)
+                        .set(USERS.REFRESH_LOGIN, true)
+                        .where(USERS.ID.eq(userId))
+                        .executeAsync();
+                return null;
+            }
+
+            PlumeAlertsAPI.dslContext().update(USER_ACCESS_TOKEN)
+                    .set(USER_ACCESS_TOKEN.LAST_VALIDATED, new Timestamp(System.currentTimeMillis()))
+                    .where(USER_ACCESS_TOKEN.USER_ID.eq(userId))
                     .executeAsync();
-            return null;
         }
-
-        PlumeAlertsAPI.dslContext().update(USER_ACCESS_TOKEN)
-                .set(USER_ACCESS_TOKEN.LAST_VALIDATED, new Timestamp(System.currentTimeMillis()))
-                .where(USER_ACCESS_TOKEN.USER_ID.eq(userId))
-                .executeAsync();
-
         return accessTokenRecord;
     }
 
@@ -55,9 +65,9 @@ public class DatabaseUserAccessTokens {
 
     public static UserAccessTokenRecord updateAccessToken(String userId, Token token, boolean revoke) {
         if (revoke) {
-            UserAccessTokenRecord accessTokenRecord = getAccessToken(userId);
+            UserAccessTokenRecord accessTokenRecord = getAccessToken(userId, false);
             if (accessTokenRecord != null)
-                TwitchAPI.oAuth2().revoke(Constants.CLIENT_ID, accessTokenRecord.getAccessToken());
+                TwitchAPI.oAuth2().revoke(Constants.TWITCH_CLIENT_ID, accessTokenRecord.getAccessToken());
         }
 
         return PlumeAlertsAPI.dslContext().update(USER_ACCESS_TOKEN)
