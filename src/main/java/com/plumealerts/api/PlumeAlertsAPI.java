@@ -4,7 +4,7 @@ import com.networknt.handler.HandlerProvider;
 import com.networknt.health.HealthGetHandler;
 import com.networknt.info.ServerInfoGetHandler;
 import com.plumealerts.api.ratelimit.RateLimitHandler;
-import com.plumealerts.api.v1.TwitchAuth;
+import com.plumealerts.api.v1.auth.TwitchAuth;
 import com.zaxxer.hikari.HikariDataSource;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
@@ -30,7 +30,7 @@ public class PlumeAlertsAPI implements HandlerProvider {
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
 
-        PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES_10);
+        PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES);
     }
 
     @Override
