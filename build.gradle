@@ -23,7 +23,7 @@ dependencies {
     compile group: 'com.networknt', name: 'health', version: '1.6.6'
     compile group: 'io.undertow', name: 'undertow-core', version: '2.0.23.Final'
     compile group: 'com.jsoniter', name: 'jsoniter', version: '0.9.23'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.28'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
