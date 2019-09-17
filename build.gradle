@@ -62,5 +62,5 @@ static String getBuildNumber() {
 }
 
 static String isSnapshot() {
-    return System.getenv("TRAVIS_BRANCH") == "development" ? "-snapshot" : ""
+    return System.getenv("TRAVIS_BRANCH") != "master" ? "-snapshot" : ""
 }
