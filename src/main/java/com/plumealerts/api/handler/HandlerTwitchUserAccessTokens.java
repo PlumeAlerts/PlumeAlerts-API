@@ -27,7 +27,9 @@ public class HandlerTwitchUserAccessTokens {
     }
 
     public static TwitchUserAccessTokenRecord getAccessToken(String userId, boolean validateToken) {
-        TwitchUserAccessTokenRecord accessTokenRecord = PlumeAlertsAPI.dslContext().selectFrom(TWITCH_USER_ACCESS_TOKEN).where(TWITCH_USER_ACCESS_TOKEN.USER_ID.eq(userId)).fetchOne();
+        TwitchUserAccessTokenRecord accessTokenRecord = PlumeAlertsAPI.dslContext().selectFrom(TWITCH_USER_ACCESS_TOKEN)
+                .where(TWITCH_USER_ACCESS_TOKEN.USER_ID.eq(userId))
+                .fetchOne();
 
         if (validateToken) {
             Validate validate = null;
