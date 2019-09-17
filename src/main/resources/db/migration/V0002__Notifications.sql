@@ -1,18 +1,3 @@
-ALTER TABLE user_access_token
-    ADD LAST_VALIDATED TIMESTAMP DEFAULT now();
-
-ALTER TABLE users
-    DROP COLUMN LAST_VALIDATED;
-
-INSERT INTO scopes
-VALUES ('chat:read'),
-       ('bits:read'),
-       ('channel:read:subscriptions'),
-       ('channel_subscriptions');
-
-UPDATE users
-SET refresh_login = true;
-
 CREATE TABLE twitch_followers
 (
     CHANNEL_ID        VARCHAR(36) NOT NULL,
@@ -20,7 +5,7 @@ CREATE TABLE twitch_followers
 
     FOLLOWER_USERNAME VARCHAR(25) NOT NULL,
     IS_FOLLOWING      BOOLEAN     NOT NULL,
-    FOLLOWED_AT       TIMESTAMP,
+    FOLLOWED_AT       TIMESTAMPTZ,
 
     PRIMARY KEY (CHANNEL_ID, FOLLOWER_ID, FOLLOWED_AT),
     FOREIGN KEY (CHANNEL_ID) REFERENCES users (ID)
@@ -36,7 +21,7 @@ CREATE TABLE twitch_bits
     MESSAGE_USERNAME VARCHAR(25),
     BITS_USED        INT         NOT NULL,
     TOTAL_BITS       INT         NOT NULL,
-    TIME             TIMESTAMP   NOT NULL,
+    TIME             TIMESTAMPTZ NOT NULL,
 
     CHANNEL_ID       VARCHAR(36) NOT NULL,
 
@@ -48,7 +33,7 @@ CREATE TABLE twitch_subscriptions
 (
     CHANNEL_ID             VARCHAR(36) NOT NULL,
     RECIPIENT_ID           VARCHAR(36) NOT NULL,
-    TIME                   TIMESTAMP   NOT NULL,
+    TIME                   TIMESTAMPTZ NOT NULL,
 
     RECIPIENT_USERNAME     VARCHAR(25) NOT NULL,
     RECIPIENT_DISPLAY_NAME VARCHAR(36) NOT NULL,
@@ -67,7 +52,7 @@ CREATE TABLE twitch_subscriptions_gift
 (
     CHANNEL_ID          VARCHAR(36) NOT NULL,
     RECIPIENT_ID        VARCHAR(36) NOT NULL,
-    TIME                TIMESTAMP   NOT NULL,
+    TIME                TIMESTAMPTZ NOT NULL,
 
     RECIPIENT_USERNAME  VARCHAR(25) NOT NULL,
     SUB_PLAN            TEXT        NOT NULL,

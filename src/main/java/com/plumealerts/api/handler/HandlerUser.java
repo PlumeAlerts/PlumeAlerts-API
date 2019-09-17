@@ -6,7 +6,7 @@ import com.plumealerts.api.db.tables.records.UsersRecord;
 
 import static com.plumealerts.api.db.Tables.USERS;
 
-public class DatabaseUser {
+public class HandlerUser {
 
     public static boolean insertUser(User user) {
         int i = PlumeAlertsAPI.dslContext().insertInto(USERS, USERS.ID, USERS.EMAIL, USERS.LOGIN, USERS.DISPLAY_NAME, USERS.BROADCASTER_TYPE, USERS.TYPE, USERS.VIEW_COUNT)

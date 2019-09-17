@@ -2,7 +2,7 @@ package com.plumealerts.api.twitch.oauth2.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 
 public class Token {
     @JsonProperty("access_token")
@@ -24,8 +24,8 @@ public class Token {
         return accessToken;
     }
 
-    public Timestamp getExpire() {
-        return new Timestamp(System.currentTimeMillis() + (expiresIn * 900));
+    public OffsetDateTime getExpire() {
+        return OffsetDateTime.now().plusSeconds(expiresIn);
     }
 
     public String getRefreshToken() {

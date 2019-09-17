@@ -1,4 +1,4 @@
-package com.plumealerts.api.v1;
+package com.plumealerts.api.v1.auth;
 
 
 import com.github.twitch4j.helix.domain.User;
@@ -9,20 +9,28 @@ import com.plumealerts.api.PlumeAlertsAPI;
 import com.plumealerts.api.db.tables.records.ScopesRecord;
 import com.plumealerts.api.db.tables.records.UserLoginRequestRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
-import com.plumealerts.api.handler.DatabaseUser;
-import com.plumealerts.api.handler.DatabaseUserAccessTokens;
+import com.plumealerts.api.handler.HandlerTwitchUserAccessTokens;
+import com.plumealerts.api.handler.HandlerUser;
+import com.plumealerts.api.handler.HandlerUserAccessTokens;
 import com.plumealerts.api.ratelimit.future.UserFollower;
 import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.Validate;
+import com.plumealerts.api.v1.auth.model.ModelLogin;
+import com.plumealerts.api.v1.auth.model.ModelLoginResponse;
 import com.plumealerts.api.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 import org.apache.http.client.utils.URIBuilder;
 import org.jooq.Result;
+import org.jose4j.jwt.NumericDate;
+import org.jose4j.lang.JoseException;
 
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Deque;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -73,8 +81,7 @@ public class TwitchAuth extends RoutingHandler {
             return;
         }
 
-        exchange.setStatusCode(200);
-        exchange.getResponseSender().send(url);
+        ResponseUtil.response(exchange, new ModelLogin(url));
     }
 
     private void response(HttpServerExchange exchange) {
@@ -101,6 +108,7 @@ public class TwitchAuth extends RoutingHandler {
             ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State must be alphanumerical and 30 characters long");
             return;
         }
+
         UserLoginRequestRecord loginRequestRecord = PlumeAlertsAPI.dslContext().selectFrom(USER_LOGIN_REQUEST)
                 .where(USER_LOGIN_REQUEST.STATE.eq(state))
                 .fetchOne();
@@ -111,10 +119,11 @@ public class TwitchAuth extends RoutingHandler {
         }
 
         // Expire state after 30 minutes, force them to login in again.
-        if ((System.currentTimeMillis() - loginRequestRecord.getCreatedAt().getTime()) > 1000 * 60 * 30) {
+        if (OffsetDateTime.now().isAfter(loginRequestRecord.getCreatedAt().plusMinutes(30))) {
             ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State has expired");
             return;
         }
+
         Token userToken;
         try {
             userToken = TwitchAPI.oAuth2().authCode(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, code, Constants.TWITCH_CLIENT_REDIRECT).execute();
@@ -126,6 +135,7 @@ public class TwitchAuth extends RoutingHandler {
             ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             return;
         }
+
         UserList users;
         try {
             users = TwitchAPI.helix().getUsers(userToken.getAccessToken(), null, null).execute();
@@ -137,13 +147,14 @@ public class TwitchAuth extends RoutingHandler {
             ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             return;
         }
+
         User user = users.getUsers().get(0);
         String userId = user.getId().toString();
 
         boolean newUser = false;
-        UsersRecord usersRecord = DatabaseUser.findUser(userId);
+        UsersRecord usersRecord = HandlerUser.findUser(userId);
         if (usersRecord == null) {
-            DatabaseUser.insertUser(user);
+            HandlerUser.insertUser(user);
             newUser = true;
         } else {
             if (usersRecord.getEmail().equalsIgnoreCase(user.getEmail())) {
@@ -155,20 +166,42 @@ public class TwitchAuth extends RoutingHandler {
                 return;
             }
 
-            DatabaseUser.updateUser(user);
+            HandlerUser.updateUser(user);
         }
 
         if (newUser) {
-            DatabaseUserAccessTokens.setAccessToken(userId, userToken);
+            HandlerTwitchUserAccessTokens.setAccessToken(userId, userToken);
             PlumeAlertsAPI.request().add(new UserFollower(userId, userToken.getAccessToken()));
             //TODO Fetch mods
         } else {
-            DatabaseUserAccessTokens.updateAccessToken(userId, userToken);
+            HandlerTwitchUserAccessTokens.updateAccessToken(userId, userToken);
         }
 
-        exchange.setStatusCode(200);
-        exchange.getResponseSender().send("DONE");
-//        return ResponseUtil.redirect(response, "/dashboard");
+        String accessToken;
+        NumericDate expiredAt = NumericDate.fromSeconds(Instant.now().plus(30, ChronoUnit.MINUTES).getEpochSecond());
+        try {
+            accessToken = HandlerUserAccessTokens.getToken(userId, expiredAt);
+        } catch (JoseException e) {
+            e.printStackTrace();
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
+        }
+        String refreshToken;
+        NumericDate refreshExpiredAt = NumericDate.fromSeconds(Instant.now().plus(7, ChronoUnit.DAYS).getEpochSecond());
+        try {
+            refreshToken = HandlerUserAccessTokens.getToken(userId, refreshExpiredAt);
+        } catch (JoseException e) {
+            e.printStackTrace();
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
+        }
+
+        if (!HandlerUserAccessTokens.insertToken(userId, accessToken, refreshToken, expiredAt, refreshExpiredAt)) {
+            ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            return;
+        }
+
+        ResponseUtil.response(exchange, new ModelLoginResponse(accessToken, refreshToken, expiredAt.getValue(), refreshExpiredAt.getValue()));
     }
 
 }

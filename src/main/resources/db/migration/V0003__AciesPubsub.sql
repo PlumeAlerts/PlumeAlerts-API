@@ -1,0 +1,31 @@
+-- Handle Acies Pubsub to fetch channels
+CREATE TABLE user_access_token
+(
+    USER_ID            VARCHAR(36),
+    ACCESS_TOKEN       TEXT        NOT NULL,
+    REFRESH_TOKEN      TEXT        NOT NULL,
+    EXPIRED_AT         TIMESTAMPTZ NOT NULL,
+    REFRESH_EXPIRED_AT TIMESTAMPTZ NOT NULL,
+
+    PRIMARY KEY (USER_ID, ACCESS_TOKEN),
+    FOREIGN KEY (USER_ID) REFERENCES users (ID)
+);
+
+CREATE TABLE users_pubsub
+(
+    USER_ID   VARCHAR(36) NOT NULL,
+    TYPE      TEXT        NOT NULL,
+
+    CONNECTED TIMESTAMPTZ DEFAULT now(),
+    PONG      TIMESTAMPTZ DEFAULT now(),
+    PRIMARY KEY (USER_ID, TYPE),
+    FOREIGN KEY (USER_ID) REFERENCES users (ID)
+);
+
+INSERT INTO users_pubsub (USER_ID, TYPE, CONNECTED, PONG)
+SELECT ID, 'subscriptions', NOW(), NOW()
+FROM users;
+
+INSERT INTO users_pubsub (USER_ID, TYPE, CONNECTED, PONG)
+SELECT ID, 'bits', NOW(), NOW()
+FROM users;

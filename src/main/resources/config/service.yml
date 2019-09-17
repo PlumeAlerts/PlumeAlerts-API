@@ -1,3 +1,5 @@
 singletons:
   - com.networknt.handler.HandlerProvider:
       - com.plumealerts.api.PlumeAlertsAPI
+  - com.networknt.handler.MiddlewareHandler:
+      - com.networknt.cors.CorsHttpHandler

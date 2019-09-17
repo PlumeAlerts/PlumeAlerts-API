@@ -6,7 +6,8 @@ import com.plumealerts.api.PlumeAlertsAPI;
 import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.twitch.TwitchAPI;
 
-import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class UserFollower implements FutureRequest {
 
         List<TwitchFollowersRecord> userRecords = new ArrayList<>();
         for (Follow usersFollow : followers) {
-            userRecords.add(new TwitchFollowersRecord(userId, usersFollow.getFromId().toString(), usersFollow.getFromName(), true, Timestamp.valueOf(usersFollow.getFollowedAt())));
+            userRecords.add(new TwitchFollowersRecord(userId, usersFollow.getFromId().toString(), usersFollow.getFromName(), true, OffsetDateTime.of(usersFollow.getFollowedAt(), ZoneOffset.UTC)));
         }
         PlumeAlertsAPI.dslContext().batchInsert(userRecords).execute();
 
