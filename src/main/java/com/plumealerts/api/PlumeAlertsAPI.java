@@ -3,8 +3,10 @@ package com.plumealerts.api;
 import com.networknt.handler.HandlerProvider;
 import com.networknt.health.HealthGetHandler;
 import com.networknt.info.ServerInfoGetHandler;
+import com.plumealerts.api.endpoints.v1.auth.AuthAPI;
+import com.plumealerts.api.endpoints.v1.auth.twitch.TwitchAuthAPI;
+import com.plumealerts.api.endpoints.v1.user.UserAPI;
 import com.plumealerts.api.ratelimit.RateLimitHandler;
-import com.plumealerts.api.v1.auth.TwitchAuth;
 import com.zaxxer.hikari.HikariDataSource;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
@@ -37,7 +39,9 @@ public class PlumeAlertsAPI implements HandlerProvider {
     public HttpHandler getHandler() {
         this.setup();
         RoutingHandler routing = Handlers.routing();
-        routing.addAll(new TwitchAuth());
+        routing.addAll(new AuthAPI());
+        routing.addAll(new TwitchAuthAPI());
+        routing.addAll(new UserAPI());
         routing.add(Methods.GET, "/health", new HealthGetHandler());
         routing.add(Methods.GET, "/server/info", new ServerInfoGetHandler());
         HttpHandler handler = routing;

@@ -1,8 +1,9 @@
 package com.plumealerts.api.utils;
 
 import com.jsoniter.output.JsonStream;
-import com.plumealerts.api.v1.domain.error.ErrorResponse;
-import com.plumealerts.api.v1.domain.error.ErrorType;
+import com.plumealerts.api.endpoints.v1.domain.Domain;
+import com.plumealerts.api.endpoints.v1.domain.error.ErrorResponse;
+import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 
@@ -11,15 +12,21 @@ public class ResponseUtil {
     private ResponseUtil() {
     }
 
-    public static void response(HttpServerExchange exchange, Object object) {
-        exchange.setStatusCode(200);
+    private static Domain response(HttpServerExchange exchange, int status, Domain domain) {
+        exchange.setStatusCode(status);
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        exchange.getResponseSender().send(JsonStream.serialize(object));
+        if (domain != null) {
+            exchange.getResponseSender().send(JsonStream.serialize(domain));
+        }
+        return domain;
     }
 
-    public static void errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {
-        exchange.setStatusCode(errorType.getCode());
-        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        exchange.getResponseSender().send(JsonStream.serialize(new ErrorResponse(errorType, message)));
+    public static Domain successResponse(HttpServerExchange exchange, Domain domain) {
+        return response(exchange, 200, domain);
+    }
+
+
+    public static Domain errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {
+        return response(exchange, errorType.getCode(), new ErrorResponse(errorType, message));
     }
 }
