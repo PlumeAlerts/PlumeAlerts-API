@@ -1,23 +1,48 @@
 package com.plumealerts.api.endpoints.v1.auth;
 
+import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
+import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
+import com.plumealerts.api.handler.user.DataError;
+import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
+import org.jose4j.lang.JoseException;
 
 public class AuthAPI extends RoutingHandler {
 
     public AuthAPI() {
         this.post("/v1/auth/validate", this::postValidate);
+        this.post("/v1/auth/refresh", this::postRefresh);
     }
 
     private Domain postValidate(HttpServerExchange exchange) {
-        Domain domain = TokenValidator.hasError(exchange);
-        if (domain != null) {
-            return domain;
+        DataError<String> dataError = TokenValidator.getUserIdFromAccessToken(exchange);
+        if (dataError.hasError()) {
+            return dataError.getError();
+        }
+        return ResponseUtil.successResponse(exchange, null);
+    }
+
+    private Domain postRefresh(HttpServerExchange exchange) {
+        DataError<String> dataError = TokenValidator.getUserIdFromRefreshToken(exchange);
+        if (dataError.hasError()) {
+            return dataError.getError();
+        }
+        AccessToken accessToken;
+        try {
+            accessToken = HandlerUserAccessTokens.generateTokens(dataError.getData());
+        } catch (JoseException e) {
+            e.printStackTrace();
+            return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
 
-        return ResponseUtil.successResponse(exchange, null);
+        if (accessToken == null) {
+            //TODO Failed due to inserting into the db
+            return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+        }
+        return ResponseUtil.successResponse(exchange, accessToken);
     }
 }

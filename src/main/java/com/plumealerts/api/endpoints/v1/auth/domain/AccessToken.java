@@ -1,8 +1,8 @@
-package com.plumealerts.api.endpoints.v1.auth.twitch.domain;
+package com.plumealerts.api.endpoints.v1.auth.domain;
 
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 
-public class TwitchLoginResponse extends Domain {
+public class AccessToken extends Domain {
 
     private String accessToken;
     private String refreshToken;
@@ -13,7 +13,7 @@ public class TwitchLoginResponse extends Domain {
     private long expiredAt;
     private long refreshExpiredAt;
 
-    public TwitchLoginResponse(String accessToken, String refreshToken, long expiredAt, long refreshExpiredAt) {
+    public AccessToken(String accessToken, String refreshToken, long expiredAt, long refreshExpiredAt) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiredAt = expiredAt;

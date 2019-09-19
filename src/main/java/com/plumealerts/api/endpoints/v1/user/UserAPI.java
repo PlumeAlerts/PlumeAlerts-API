@@ -1,6 +1,7 @@
 package com.plumealerts.api.endpoints.v1.user;
 
 import com.plumealerts.api.endpoints.v1.domain.Domain;
+import com.plumealerts.api.handler.user.DataError;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;
 import io.undertow.server.HttpServerExchange;
@@ -13,10 +14,9 @@ public class UserAPI extends RoutingHandler {
     }
 
     private Domain getUser(HttpServerExchange exchange) {
-
-        Domain domain = TokenValidator.hasError(exchange);
-        if (domain != null) {
-            return domain;
+        DataError dataError = TokenValidator.getUserIdFromAccessToken(exchange);
+        if (dataError.hasError()) {
+            return dataError.getError();
         }
 
         return ResponseUtil.successResponse(exchange, null);
