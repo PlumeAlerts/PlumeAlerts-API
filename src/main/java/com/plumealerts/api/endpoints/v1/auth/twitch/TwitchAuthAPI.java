@@ -11,14 +11,14 @@ import com.plumealerts.api.db.tables.records.UserLoginRequestRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
 import com.plumealerts.api.handler.HandlerTwitchUserAccessTokens;
 import com.plumealerts.api.handler.HandlerUser;
-import com.plumealerts.api.handler.HandlerUserAccessTokens;
+import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
 import com.plumealerts.api.ratelimit.future.UserFollower;
 import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.Validate;
 import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
-import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLoginResponse;
+import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
@@ -165,26 +165,18 @@ public class TwitchAuthAPI extends RoutingHandler {
             HandlerTwitchUserAccessTokens.updateAccessToken(userId, userToken);
         }
 
-        String accessToken;
-        NumericDate expiredAt = NumericDate.fromSeconds(Instant.now().plus(30, ChronoUnit.MINUTES).getEpochSecond());
+        AccessToken accessToken;
         try {
-            accessToken = HandlerUserAccessTokens.generateToken(userId, expiredAt);
-        } catch (JoseException e) {
-            e.printStackTrace();
-            return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
-        }
-        String refreshToken;
-        NumericDate refreshExpiredAt = NumericDate.fromSeconds(Instant.now().plus(7, ChronoUnit.DAYS).getEpochSecond());
-        try {
-            refreshToken = HandlerUserAccessTokens.generateToken(userId, refreshExpiredAt);
+            accessToken = HandlerUserAccessTokens.generateTokens(userId);
         } catch (JoseException e) {
             e.printStackTrace();
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
 
-        if (!HandlerUserAccessTokens.insertToken(userId, accessToken, refreshToken, expiredAt, refreshExpiredAt)) {
+        if (accessToken == null) {
+            //TODO Failed due to inserting into the db
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
-        return ResponseUtil.successResponse(exchange, new TwitchLoginResponse(accessToken, refreshToken, expiredAt.getValue(), refreshExpiredAt.getValue()));
+        return ResponseUtil.successResponse(exchange, accessToken);
     }
 }
