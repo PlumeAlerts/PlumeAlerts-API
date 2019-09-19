@@ -9,6 +9,10 @@ import com.plumealerts.api.PlumeAlertsAPI;
 import com.plumealerts.api.db.tables.records.ScopesRecord;
 import com.plumealerts.api.db.tables.records.UserLoginRequestRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
+import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
+import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
+import com.plumealerts.api.endpoints.v1.domain.Domain;
+import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.HandlerTwitchUserAccessTokens;
 import com.plumealerts.api.handler.HandlerUser;
 import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
@@ -17,21 +21,14 @@ import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.Validate;
-import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
-import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
-import com.plumealerts.api.endpoints.v1.domain.Domain;
-import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 import org.apache.http.client.utils.URIBuilder;
 import org.jooq.Result;
-import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Deque;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -51,7 +48,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         for (ScopesRecord scope : scopesRecords) {
             joiner.add(scope.getScope());
         }
-        this.scopes = joiner.toString();
+        this.scopes = joiner.toString() + "+moderation:read";
         this.get("/v1/auth/twitch/login", this::getLogin);
         this.get("/v1/auth/twitch/response", this::getResponse);
     }
