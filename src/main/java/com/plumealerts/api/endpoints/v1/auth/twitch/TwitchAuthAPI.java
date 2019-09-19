@@ -48,7 +48,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         for (ScopesRecord scope : scopesRecords) {
             joiner.add(scope.getScope());
         }
-        this.scopes = joiner.toString() + "+moderation:read";
+        this.scopes = joiner.toString();
         this.get("/v1/auth/twitch/login", this::getLogin);
         this.get("/v1/auth/twitch/response", this::getResponse);
     }
@@ -146,6 +146,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         } else {
             if (usersRecord.getEmail().equalsIgnoreCase(user.getEmail())) {
                 //TODO FUTURE PROOF, ASK THEM IF THEY WANT TO CHANGE THEIR EMAIL. Implement a system so it doesn't ask them every time though
+                return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             }
             if (!usersRecord.getId().equalsIgnoreCase(userId)) {
                 //TODO MAJOR ISSUE
