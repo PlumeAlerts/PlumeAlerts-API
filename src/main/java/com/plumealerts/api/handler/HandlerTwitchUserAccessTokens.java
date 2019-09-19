@@ -10,8 +10,8 @@ import com.plumealerts.api.twitch.oauth2.domain.Validate;
 
 import java.time.OffsetDateTime;
 
-import static com.plumealerts.api.db.Tables.USERS;
 import static com.plumealerts.api.db.Tables.TWITCH_USER_ACCESS_TOKEN;
+import static com.plumealerts.api.db.Tables.USERS;
 
 public class HandlerTwitchUserAccessTokens {
 
