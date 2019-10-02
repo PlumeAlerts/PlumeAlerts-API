@@ -5,14 +5,9 @@ install:
   - ./gradlew
 script:
   - ./gradlew check
+#  Check for code style in the future
 deploy:
-  ## Deploy staging
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew jib
-    on:
-      branch: develop
-  ## Deploy master
+  ## Deploy
   - provider: script
     skip_cleanup: true
     script: ./gradlew jib
