@@ -1,8 +1,6 @@
 package com.plumealerts.api;
 
 import com.networknt.handler.HandlerProvider;
-import com.networknt.health.HealthGetHandler;
-import com.networknt.info.ServerInfoGetHandler;
 import com.plumealerts.api.endpoints.v1.auth.AuthAPI;
 import com.plumealerts.api.endpoints.v1.auth.twitch.TwitchAuthAPI;
 import com.plumealerts.api.endpoints.v1.user.UserAPI;
@@ -11,7 +9,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
-import io.undertow.util.Methods;
 import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -28,7 +25,6 @@ public class PlumeAlertsAPI implements HandlerProvider {
         ds.setJdbcUrl(Constants.DB_HOSTNAME);
         ds.setUsername(Constants.DB_USERNAME);
         ds.setPassword(Constants.DB_PASSWORD);
-        ds.setConnectionInitSql("set time zone 'UTC'");
         Flyway flyway = Flyway.configure().dataSource(ds).load();
         flyway.migrate();
 
@@ -42,8 +38,6 @@ public class PlumeAlertsAPI implements HandlerProvider {
         routing.addAll(new AuthAPI());
         routing.addAll(new TwitchAuthAPI());
         routing.addAll(new UserAPI());
-        routing.add(Methods.GET, "/health", new HealthGetHandler());
-        routing.add(Methods.GET, "/server/info", new ServerInfoGetHandler());
         HttpHandler handler = routing;
         return handler;
     }
