@@ -3,7 +3,7 @@ package com.plumealerts.api.endpoints.v1.auth;
 import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
-import com.plumealerts.api.handler.user.DataError;
+import com.plumealerts.api.handler.DataError;
 import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;

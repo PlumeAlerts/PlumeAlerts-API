@@ -1,4 +1,4 @@
-package com.plumealerts.api.handler.user;
+package com.plumealerts.api.handler;
 
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 

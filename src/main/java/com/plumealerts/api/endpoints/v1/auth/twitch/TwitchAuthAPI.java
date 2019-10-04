@@ -43,6 +43,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         Result<ScopesRecord> scopesRecords = PlumeAlertsAPI.dslContext().selectFrom(SCOPES).fetch();
         if (scopesRecords.isEmpty()) {
             System.exit(-1);
+            //TODO Change to something better
         }
         StringJoiner joiner = new StringJoiner("+");
         for (ScopesRecord scope : scopesRecords) {

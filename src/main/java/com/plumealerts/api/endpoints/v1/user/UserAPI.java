@@ -5,7 +5,7 @@ import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.endpoints.v1.user.domain.User;
 import com.plumealerts.api.handler.HandlerUser;
-import com.plumealerts.api.handler.user.DataError;
+import com.plumealerts.api.handler.DataError;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;
 import io.undertow.server.HttpServerExchange;

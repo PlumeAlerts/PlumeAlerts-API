@@ -38,8 +38,7 @@ public class PlumeAlertsAPI implements HandlerProvider {
         routing.addAll(new AuthAPI());
         routing.addAll(new TwitchAuthAPI());
         routing.addAll(new UserAPI());
-        HttpHandler handler = routing;
-        return handler;
+        return routing;
     }
 
     public static RateLimitHandler request() {
