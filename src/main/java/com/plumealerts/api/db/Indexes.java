@@ -37,7 +37,6 @@ public class Indexes {
     public static final Index TWITCH_SUBSCRIPTIONS_PKEY = Indexes0.TWITCH_SUBSCRIPTIONS_PKEY;
     public static final Index TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Indexes0.TWITCH_SUBSCRIPTIONS_GIFT_PKEY;
     public static final Index TWITCH_USER_ACCESS_TOKEN_PKEY = Indexes0.TWITCH_USER_ACCESS_TOKEN_PKEY;
-    public static final Index USER_ACCESS_TOKEN_PKEY = Indexes0.USER_ACCESS_TOKEN_PKEY;
     public static final Index USER_LOGIN_REQUEST_PKEY = Indexes0.USER_LOGIN_REQUEST_PKEY;
     public static final Index USERS_PKEY = Indexes0.USERS_PKEY;
     public static final Index USERS_PUBSUB_PKEY = Indexes0.USERS_PUBSUB_PKEY;
@@ -55,7 +54,6 @@ public class Indexes {
         public static Index TWITCH_SUBSCRIPTIONS_PKEY = Internal.createIndex("twitch_subscriptions_pkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, new OrderField[]{TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.NOTIFICATION_ID}, true);
         public static Index TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Internal.createIndex("twitch_subscriptions_gift_pkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, new OrderField[]{TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.NOTIFICATION_ID}, true);
         public static Index TWITCH_USER_ACCESS_TOKEN_PKEY = Internal.createIndex("twitch_user_access_token_pkey", TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN, new OrderField[]{TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN.USER_ID}, true);
-        public static Index USER_ACCESS_TOKEN_PKEY = Internal.createIndex("user_access_token_pkey", UserAccessToken.USER_ACCESS_TOKEN, new OrderField[]{UserAccessToken.USER_ACCESS_TOKEN.USER_ID, UserAccessToken.USER_ACCESS_TOKEN.ACCESS_TOKEN}, true);
         public static Index USER_LOGIN_REQUEST_PKEY = Internal.createIndex("user_login_request_pkey", UserLoginRequest.USER_LOGIN_REQUEST, new OrderField[]{UserLoginRequest.USER_LOGIN_REQUEST.STATE, UserLoginRequest.USER_LOGIN_REQUEST.CREATED_AT}, true);
         public static Index USERS_PKEY = Internal.createIndex("users_pkey", Users.USERS, new OrderField[]{Users.USERS.ID}, true);
         public static Index USERS_PUBSUB_PKEY = Internal.createIndex("users_pubsub_pkey", UsersPubsub.USERS_PUBSUB, new OrderField[]{UsersPubsub.USERS_PUBSUB.USER_ID, UsersPubsub.USERS_PUBSUB.TYPE}, true);

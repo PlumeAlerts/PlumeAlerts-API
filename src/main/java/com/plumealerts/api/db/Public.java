@@ -28,7 +28,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1164682725;
+    private static final long serialVersionUID = 443764609;
 
     /**
      * The reference instance of <code>public</code>
@@ -69,11 +69,6 @@ public class Public extends SchemaImpl {
      * The table <code>public.twitch_user_access_token</code>.
      */
     public final TwitchUserAccessToken TWITCH_USER_ACCESS_TOKEN = com.plumealerts.api.db.tables.TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN;
-
-    /**
-     * The table <code>public.user_access_token</code>.
-     */
-    public final UserAccessToken USER_ACCESS_TOKEN = com.plumealerts.api.db.tables.UserAccessToken.USER_ACCESS_TOKEN;
 
     /**
      * The table <code>public.user_login_request</code>.
@@ -119,7 +114,6 @@ public class Public extends SchemaImpl {
                 TwitchSubscriptions.TWITCH_SUBSCRIPTIONS,
                 TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT,
                 TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN,
-                UserAccessToken.USER_ACCESS_TOKEN,
                 UserLoginRequest.USER_LOGIN_REQUEST,
                 Users.USERS,
                 UsersPubsub.USERS_PUBSUB);
