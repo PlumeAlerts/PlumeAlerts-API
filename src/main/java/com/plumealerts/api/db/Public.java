@@ -28,12 +28,17 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1375187665;
+    private static final long serialVersionUID = -1164682725;
 
     /**
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
+
+    /**
+     * The table <code>public.notification</code>.
+     */
+    public final Notification NOTIFICATION = com.plumealerts.api.db.tables.Notification.NOTIFICATION;
 
     /**
      * The table <code>public.scopes</code>.
@@ -107,6 +112,7 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
+                Notification.NOTIFICATION,
                 Scopes.SCOPES,
                 TwitchBits.TWITCH_BITS,
                 TwitchFollowers.TWITCH_FOLLOWERS,

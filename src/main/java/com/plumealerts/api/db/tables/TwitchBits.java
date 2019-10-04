@@ -13,7 +13,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
 import javax.annotation.Generated;
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class TwitchBits extends TableImpl<TwitchBitsRecord> {
 
-    private static final long serialVersionUID = -467822450;
+    private static final long serialVersionUID = 1652790874;
 
     /**
      * The reference instance of <code>public.twitch_bits</code>
@@ -47,9 +46,14 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
     }
 
     /**
+     * The column <code>public.twitch_bits.notification_id</code>.
+     */
+    public final TableField<TwitchBitsRecord, Long> NOTIFICATION_ID = createField(DSL.name("notification_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
      * The column <code>public.twitch_bits.message_id</code>.
      */
-    public final TableField<TwitchBitsRecord, String> MESSAGE_ID = createField(DSL.name("message_id"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "");
+    public final TableField<TwitchBitsRecord, String> MESSAGE_ID = createField(DSL.name("message_id"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
      * The column <code>public.twitch_bits.anonymous</code>.
@@ -60,11 +64,6 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
      * The column <code>public.twitch_bits.message</code>.
      */
     public final TableField<TwitchBitsRecord, String> MESSAGE = createField(DSL.name("message"), org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.twitch_bits.message_user_id</code>.
-     */
-    public final TableField<TwitchBitsRecord, String> MESSAGE_USER_ID = createField(DSL.name("message_user_id"), org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
 
     /**
      * The column <code>public.twitch_bits.message_username</code>.
@@ -80,16 +79,6 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
      * The column <code>public.twitch_bits.total_bits</code>.
      */
     public final TableField<TwitchBitsRecord, Integer> TOTAL_BITS = createField(DSL.name("total_bits"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>public.twitch_bits.time</code>.
-     */
-    public final TableField<TwitchBitsRecord, OffsetDateTime> TIME = createField(DSL.name("time"), org.jooq.impl.SQLDataType.TIMESTAMPWITHTIMEZONE.nullable(false), this, "");
-
-    /**
-     * The column <code>public.twitch_bits.channel_id</code>.
-     */
-    public final TableField<TwitchBitsRecord, String> CHANNEL_ID = createField(DSL.name("channel_id"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "");
 
     /**
      * Create a <code>public.twitch_bits</code> table reference
@@ -131,7 +120,7 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TWITCH_BITS_PKEY);
+        return Arrays.<Index>asList(Indexes.TWITCH_BITS_MESSAGE_ID_KEY, Indexes.TWITCH_BITS_PKEY);
     }
 
     @Override
@@ -141,16 +130,16 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
 
     @Override
     public List<UniqueKey<TwitchBitsRecord>> getKeys() {
-        return Arrays.<UniqueKey<TwitchBitsRecord>>asList(Keys.TWITCH_BITS_PKEY);
+        return Arrays.<UniqueKey<TwitchBitsRecord>>asList(Keys.TWITCH_BITS_PKEY, Keys.TWITCH_BITS_MESSAGE_ID_KEY);
     }
 
     @Override
     public List<ForeignKey<TwitchBitsRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TwitchBitsRecord, ?>>asList(Keys.TWITCH_BITS__TWITCH_BITS_CHANNEL_ID_FKEY);
+        return Arrays.<ForeignKey<TwitchBitsRecord, ?>>asList(Keys.TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY);
     }
 
-    public Users users() {
-        return new Users(this, Keys.TWITCH_BITS__TWITCH_BITS_CHANNEL_ID_FKEY);
+    public Notification notification() {
+        return new Notification(this, Keys.TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY);
     }
 
     @Override
@@ -180,11 +169,11 @@ public class TwitchBits extends TableImpl<TwitchBitsRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<String, Boolean, String, String, String, Integer, Integer, OffsetDateTime, String> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row7<Long, String, Boolean, String, String, Integer, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

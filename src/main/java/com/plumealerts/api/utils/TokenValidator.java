@@ -2,7 +2,7 @@ package com.plumealerts.api.utils;
 
 import com.plumealerts.api.db.tables.records.UserAccessTokenRecord;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
-import com.plumealerts.api.handler.user.DataError;
+import com.plumealerts.api.handler.DataError;
 import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
 import io.undertow.server.HttpServerExchange;
 

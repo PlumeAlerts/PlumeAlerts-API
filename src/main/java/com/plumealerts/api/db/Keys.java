@@ -36,8 +36,10 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<NotificationRecord> NOTIFICATION_PKEY = UniqueKeys0.NOTIFICATION_PKEY;
     public static final UniqueKey<ScopesRecord> SCOPES_PKEY = UniqueKeys0.SCOPES_PKEY;
     public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_PKEY = UniqueKeys0.TWITCH_BITS_PKEY;
+    public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_MESSAGE_ID_KEY = UniqueKeys0.TWITCH_BITS_MESSAGE_ID_KEY;
     public static final UniqueKey<TwitchFollowersRecord> TWITCH_FOLLOWERS_PKEY = UniqueKeys0.TWITCH_FOLLOWERS_PKEY;
     public static final UniqueKey<TwitchSubscriptionsRecord> TWITCH_SUBSCRIPTIONS_PKEY = UniqueKeys0.TWITCH_SUBSCRIPTIONS_PKEY;
     public static final UniqueKey<TwitchSubscriptionsGiftRecord> TWITCH_SUBSCRIPTIONS_GIFT_PKEY = UniqueKeys0.TWITCH_SUBSCRIPTIONS_GIFT_PKEY;
@@ -51,10 +53,11 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final ForeignKey<TwitchBitsRecord, UsersRecord> TWITCH_BITS__TWITCH_BITS_CHANNEL_ID_FKEY = ForeignKeys0.TWITCH_BITS__TWITCH_BITS_CHANNEL_ID_FKEY;
-    public static final ForeignKey<TwitchFollowersRecord, UsersRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_CHANNEL_ID_FKEY = ForeignKeys0.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_CHANNEL_ID_FKEY;
-    public static final ForeignKey<TwitchSubscriptionsRecord, UsersRecord> TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_CHANNEL_ID_FKEY = ForeignKeys0.TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_CHANNEL_ID_FKEY;
-    public static final ForeignKey<TwitchSubscriptionsGiftRecord, UsersRecord> TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_CHANNEL_ID_FKEY = ForeignKeys0.TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_CHANNEL_ID_FKEY;
+    public static final ForeignKey<NotificationRecord, UsersRecord> NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY = ForeignKeys0.NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY;
+    public static final ForeignKey<TwitchBitsRecord, NotificationRecord> TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY;
+    public static final ForeignKey<TwitchFollowersRecord, NotificationRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY;
+    public static final ForeignKey<TwitchSubscriptionsRecord, NotificationRecord> TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_NOTIFICATION_ID_FKEY;
+    public static final ForeignKey<TwitchSubscriptionsGiftRecord, NotificationRecord> TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_NOTIFICATION_ID_FKEY;
     public static final ForeignKey<TwitchUserAccessTokenRecord, UsersRecord> TWITCH_USER_ACCESS_TOKEN__TWITCH_USER_ACCESS_TOKEN_USER_ID_FKEY = ForeignKeys0.TWITCH_USER_ACCESS_TOKEN__TWITCH_USER_ACCESS_TOKEN_USER_ID_FKEY;
     public static final ForeignKey<UserAccessTokenRecord, UsersRecord> USER_ACCESS_TOKEN__USER_ACCESS_TOKEN_USER_ID_FKEY = ForeignKeys0.USER_ACCESS_TOKEN__USER_ACCESS_TOKEN_USER_ID_FKEY;
     public static final ForeignKey<UsersPubsubRecord, UsersRecord> USERS_PUBSUB__USERS_PUBSUB_USER_ID_FKEY = ForeignKeys0.USERS_PUBSUB__USERS_PUBSUB_USER_ID_FKEY;
@@ -64,11 +67,13 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class UniqueKeys0 {
+        public static final UniqueKey<NotificationRecord> NOTIFICATION_PKEY = Internal.createUniqueKey(Notification.NOTIFICATION, "notification_pkey", Notification.NOTIFICATION.ID);
         public static final UniqueKey<ScopesRecord> SCOPES_PKEY = Internal.createUniqueKey(Scopes.SCOPES, "scopes_pkey", Scopes.SCOPES.SCOPE);
-        public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_PKEY = Internal.createUniqueKey(TwitchBits.TWITCH_BITS, "twitch_bits_pkey", TwitchBits.TWITCH_BITS.MESSAGE_ID);
-        public static final UniqueKey<TwitchFollowersRecord> TWITCH_FOLLOWERS_PKEY = Internal.createUniqueKey(TwitchFollowers.TWITCH_FOLLOWERS, "twitch_followers_pkey", TwitchFollowers.TWITCH_FOLLOWERS.CHANNEL_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWER_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWED_AT);
-        public static final UniqueKey<TwitchSubscriptionsRecord> TWITCH_SUBSCRIPTIONS_PKEY = Internal.createUniqueKey(TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, "twitch_subscriptions_pkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.CHANNEL_ID, TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.RECIPIENT_ID, TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.TIME);
-        public static final UniqueKey<TwitchSubscriptionsGiftRecord> TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Internal.createUniqueKey(TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, "twitch_subscriptions_gift_pkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.CHANNEL_ID, TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.RECIPIENT_ID, TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.TIME);
+        public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_PKEY = Internal.createUniqueKey(TwitchBits.TWITCH_BITS, "twitch_bits_pkey", TwitchBits.TWITCH_BITS.NOTIFICATION_ID);
+        public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_MESSAGE_ID_KEY = Internal.createUniqueKey(TwitchBits.TWITCH_BITS, "twitch_bits_message_id_key", TwitchBits.TWITCH_BITS.MESSAGE_ID);
+        public static final UniqueKey<TwitchFollowersRecord> TWITCH_FOLLOWERS_PKEY = Internal.createUniqueKey(TwitchFollowers.TWITCH_FOLLOWERS, "twitch_followers_pkey", TwitchFollowers.TWITCH_FOLLOWERS.NOTIFICATION_ID);
+        public static final UniqueKey<TwitchSubscriptionsRecord> TWITCH_SUBSCRIPTIONS_PKEY = Internal.createUniqueKey(TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, "twitch_subscriptions_pkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.NOTIFICATION_ID);
+        public static final UniqueKey<TwitchSubscriptionsGiftRecord> TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Internal.createUniqueKey(TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, "twitch_subscriptions_gift_pkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.NOTIFICATION_ID);
         public static final UniqueKey<TwitchUserAccessTokenRecord> TWITCH_USER_ACCESS_TOKEN_PKEY = Internal.createUniqueKey(TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN, "twitch_user_access_token_pkey", TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN.USER_ID);
         public static final UniqueKey<UserAccessTokenRecord> USER_ACCESS_TOKEN_PKEY = Internal.createUniqueKey(UserAccessToken.USER_ACCESS_TOKEN, "user_access_token_pkey", UserAccessToken.USER_ACCESS_TOKEN.USER_ID, UserAccessToken.USER_ACCESS_TOKEN.ACCESS_TOKEN);
         public static final UniqueKey<UserLoginRequestRecord> USER_LOGIN_REQUEST_PKEY = Internal.createUniqueKey(UserLoginRequest.USER_LOGIN_REQUEST, "user_login_request_pkey", UserLoginRequest.USER_LOGIN_REQUEST.STATE, UserLoginRequest.USER_LOGIN_REQUEST.CREATED_AT);
@@ -77,10 +82,11 @@ public class Keys {
     }
 
     private static class ForeignKeys0 {
-        public static final ForeignKey<TwitchBitsRecord, UsersRecord> TWITCH_BITS__TWITCH_BITS_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, TwitchBits.TWITCH_BITS, "twitch_bits__twitch_bits_channel_id_fkey", TwitchBits.TWITCH_BITS.CHANNEL_ID);
-        public static final ForeignKey<TwitchFollowersRecord, UsersRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, TwitchFollowers.TWITCH_FOLLOWERS, "twitch_followers__twitch_followers_channel_id_fkey", TwitchFollowers.TWITCH_FOLLOWERS.CHANNEL_ID);
-        public static final ForeignKey<TwitchSubscriptionsRecord, UsersRecord> TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, "twitch_subscriptions__twitch_subscriptions_channel_id_fkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.CHANNEL_ID);
-        public static final ForeignKey<TwitchSubscriptionsGiftRecord, UsersRecord> TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, "twitch_subscriptions_gift__twitch_subscriptions_gift_channel_id_fkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.CHANNEL_ID);
+        public static final ForeignKey<NotificationRecord, UsersRecord> NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, Notification.NOTIFICATION, "notification__notification_channel_id_fkey", Notification.NOTIFICATION.CHANNEL_ID);
+        public static final ForeignKey<TwitchBitsRecord, NotificationRecord> TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchBits.TWITCH_BITS, "twitch_bits__twitch_bits_notification_id_fkey", TwitchBits.TWITCH_BITS.NOTIFICATION_ID);
+        public static final ForeignKey<TwitchFollowersRecord, NotificationRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchFollowers.TWITCH_FOLLOWERS, "twitch_followers__twitch_followers_notification_id_fkey", TwitchFollowers.TWITCH_FOLLOWERS.NOTIFICATION_ID);
+        public static final ForeignKey<TwitchSubscriptionsRecord, NotificationRecord> TWITCH_SUBSCRIPTIONS__TWITCH_SUBSCRIPTIONS_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, "twitch_subscriptions__twitch_subscriptions_notification_id_fkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.NOTIFICATION_ID);
+        public static final ForeignKey<TwitchSubscriptionsGiftRecord, NotificationRecord> TWITCH_SUBSCRIPTIONS_GIFT__TWITCH_SUBSCRIPTIONS_GIFT_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, "twitch_subscriptions_gift__twitch_subscriptions_gift_notification_id_fkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.NOTIFICATION_ID);
         public static final ForeignKey<TwitchUserAccessTokenRecord, UsersRecord> TWITCH_USER_ACCESS_TOKEN__TWITCH_USER_ACCESS_TOKEN_USER_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN, "twitch_user_access_token__twitch_user_access_token_user_id_fkey", TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN.USER_ID);
         public static final ForeignKey<UserAccessTokenRecord, UsersRecord> USER_ACCESS_TOKEN__USER_ACCESS_TOKEN_USER_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, UserAccessToken.USER_ACCESS_TOKEN, "user_access_token__user_access_token_user_id_fkey", UserAccessToken.USER_ACCESS_TOKEN.USER_ID);
         public static final ForeignKey<UsersPubsubRecord, UsersRecord> USERS_PUBSUB__USERS_PUBSUB_USER_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, UsersPubsub.USERS_PUBSUB, "users_pubsub__users_pubsub_user_id_fkey", UsersPubsub.USERS_PUBSUB.USER_ID);

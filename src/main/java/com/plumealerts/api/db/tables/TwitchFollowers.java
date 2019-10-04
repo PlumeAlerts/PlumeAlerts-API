@@ -13,7 +13,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
 import javax.annotation.Generated;
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class TwitchFollowers extends TableImpl<TwitchFollowersRecord> {
 
-    private static final long serialVersionUID = -210750262;
+    private static final long serialVersionUID = -30040214;
 
     /**
      * The reference instance of <code>public.twitch_followers</code>
@@ -47,29 +46,14 @@ public class TwitchFollowers extends TableImpl<TwitchFollowersRecord> {
     }
 
     /**
-     * The column <code>public.twitch_followers.channel_id</code>.
+     * The column <code>public.twitch_followers.notification_id</code>.
      */
-    public final TableField<TwitchFollowersRecord, String> CHANNEL_ID = createField(DSL.name("channel_id"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "");
-
-    /**
-     * The column <code>public.twitch_followers.follower_id</code>.
-     */
-    public final TableField<TwitchFollowersRecord, String> FOLLOWER_ID = createField(DSL.name("follower_id"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "");
+    public final TableField<TwitchFollowersRecord, Long> NOTIFICATION_ID = createField(DSL.name("notification_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.twitch_followers.follower_username</code>.
      */
     public final TableField<TwitchFollowersRecord, String> FOLLOWER_USERNAME = createField(DSL.name("follower_username"), org.jooq.impl.SQLDataType.VARCHAR(25).nullable(false), this, "");
-
-    /**
-     * The column <code>public.twitch_followers.is_following</code>.
-     */
-    public final TableField<TwitchFollowersRecord, Boolean> IS_FOLLOWING = createField(DSL.name("is_following"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false), this, "");
-
-    /**
-     * The column <code>public.twitch_followers.followed_at</code>.
-     */
-    public final TableField<TwitchFollowersRecord, OffsetDateTime> FOLLOWED_AT = createField(DSL.name("followed_at"), org.jooq.impl.SQLDataType.TIMESTAMPWITHTIMEZONE.nullable(false), this, "");
 
     /**
      * Create a <code>public.twitch_followers</code> table reference
@@ -126,11 +110,11 @@ public class TwitchFollowers extends TableImpl<TwitchFollowersRecord> {
 
     @Override
     public List<ForeignKey<TwitchFollowersRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TwitchFollowersRecord, ?>>asList(Keys.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_CHANNEL_ID_FKEY);
+        return Arrays.<ForeignKey<TwitchFollowersRecord, ?>>asList(Keys.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY);
     }
 
-    public Users users() {
-        return new Users(this, Keys.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_CHANNEL_ID_FKEY);
+    public Notification notification() {
+        return new Notification(this, Keys.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY);
     }
 
     @Override
@@ -160,11 +144,11 @@ public class TwitchFollowers extends TableImpl<TwitchFollowersRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row2 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<String, String, String, Boolean, OffsetDateTime> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row2<Long, String> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 }

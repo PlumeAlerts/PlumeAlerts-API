@@ -29,9 +29,13 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index NOTIFICATION_PKEY = Indexes0.NOTIFICATION_PKEY;
     public static final Index SCOPES_PKEY = Indexes0.SCOPES_PKEY;
+    public static final Index TWITCH_BITS_MESSAGE_ID_KEY = Indexes0.TWITCH_BITS_MESSAGE_ID_KEY;
     public static final Index TWITCH_BITS_PKEY = Indexes0.TWITCH_BITS_PKEY;
     public static final Index TWITCH_FOLLOWERS_PKEY = Indexes0.TWITCH_FOLLOWERS_PKEY;
+    public static final Index TWITCH_SUBSCRIPTIONS_PKEY = Indexes0.TWITCH_SUBSCRIPTIONS_PKEY;
+    public static final Index TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Indexes0.TWITCH_SUBSCRIPTIONS_GIFT_PKEY;
     public static final Index TWITCH_USER_ACCESS_TOKEN_PKEY = Indexes0.TWITCH_USER_ACCESS_TOKEN_PKEY;
     public static final Index USER_ACCESS_TOKEN_PKEY = Indexes0.USER_ACCESS_TOKEN_PKEY;
     public static final Index USER_LOGIN_REQUEST_PKEY = Indexes0.USER_LOGIN_REQUEST_PKEY;
@@ -43,9 +47,13 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index NOTIFICATION_PKEY = Internal.createIndex("notification_pkey", Notification.NOTIFICATION, new OrderField[]{Notification.NOTIFICATION.ID}, true);
         public static Index SCOPES_PKEY = Internal.createIndex("scopes_pkey", Scopes.SCOPES, new OrderField[]{Scopes.SCOPES.SCOPE}, true);
-        public static Index TWITCH_BITS_PKEY = Internal.createIndex("twitch_bits_pkey", TwitchBits.TWITCH_BITS, new OrderField[]{TwitchBits.TWITCH_BITS.MESSAGE_ID}, true);
-        public static Index TWITCH_FOLLOWERS_PKEY = Internal.createIndex("twitch_followers_pkey", TwitchFollowers.TWITCH_FOLLOWERS, new OrderField[]{TwitchFollowers.TWITCH_FOLLOWERS.CHANNEL_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWER_ID, TwitchFollowers.TWITCH_FOLLOWERS.FOLLOWED_AT}, true);
+        public static Index TWITCH_BITS_MESSAGE_ID_KEY = Internal.createIndex("twitch_bits_message_id_key", TwitchBits.TWITCH_BITS, new OrderField[]{TwitchBits.TWITCH_BITS.MESSAGE_ID}, true);
+        public static Index TWITCH_BITS_PKEY = Internal.createIndex("twitch_bits_pkey", TwitchBits.TWITCH_BITS, new OrderField[]{TwitchBits.TWITCH_BITS.NOTIFICATION_ID}, true);
+        public static Index TWITCH_FOLLOWERS_PKEY = Internal.createIndex("twitch_followers_pkey", TwitchFollowers.TWITCH_FOLLOWERS, new OrderField[]{TwitchFollowers.TWITCH_FOLLOWERS.NOTIFICATION_ID}, true);
+        public static Index TWITCH_SUBSCRIPTIONS_PKEY = Internal.createIndex("twitch_subscriptions_pkey", TwitchSubscriptions.TWITCH_SUBSCRIPTIONS, new OrderField[]{TwitchSubscriptions.TWITCH_SUBSCRIPTIONS.NOTIFICATION_ID}, true);
+        public static Index TWITCH_SUBSCRIPTIONS_GIFT_PKEY = Internal.createIndex("twitch_subscriptions_gift_pkey", TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT, new OrderField[]{TwitchSubscriptionsGift.TWITCH_SUBSCRIPTIONS_GIFT.NOTIFICATION_ID}, true);
         public static Index TWITCH_USER_ACCESS_TOKEN_PKEY = Internal.createIndex("twitch_user_access_token_pkey", TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN, new OrderField[]{TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN.USER_ID}, true);
         public static Index USER_ACCESS_TOKEN_PKEY = Internal.createIndex("user_access_token_pkey", UserAccessToken.USER_ACCESS_TOKEN, new OrderField[]{UserAccessToken.USER_ACCESS_TOKEN.USER_ID, UserAccessToken.USER_ACCESS_TOKEN.ACCESS_TOKEN}, true);
         public static Index USER_LOGIN_REQUEST_PKEY = Internal.createIndex("user_login_request_pkey", UserLoginRequest.USER_LOGIN_REQUEST, new OrderField[]{UserLoginRequest.USER_LOGIN_REQUEST.STATE, UserLoginRequest.USER_LOGIN_REQUEST.CREATED_AT}, true);
