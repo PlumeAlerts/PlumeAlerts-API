@@ -145,7 +145,7 @@ public class TwitchAuthAPI extends RoutingHandler {
             HandlerUser.insertUser(user);
             newUser = true;
         } else {
-            if (usersRecord.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (!usersRecord.getEmail().equalsIgnoreCase(user.getEmail())) {
                 //TODO FUTURE PROOF, ASK THEM IF THEY WANT TO CHANGE THEIR EMAIL. Implement a system so it doesn't ask them every time though
                 return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             }

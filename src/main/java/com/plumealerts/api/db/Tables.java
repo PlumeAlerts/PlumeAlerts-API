@@ -58,11 +58,6 @@ public class Tables {
     public static final TwitchUserAccessToken TWITCH_USER_ACCESS_TOKEN = TwitchUserAccessToken.TWITCH_USER_ACCESS_TOKEN;
 
     /**
-     * The table <code>public.user_access_token</code>.
-     */
-    public static final UserAccessToken USER_ACCESS_TOKEN = UserAccessToken.USER_ACCESS_TOKEN;
-
-    /**
      * The table <code>public.user_login_request</code>.
      */
     public static final UserLoginRequest USER_LOGIN_REQUEST = UserLoginRequest.USER_LOGIN_REQUEST;
