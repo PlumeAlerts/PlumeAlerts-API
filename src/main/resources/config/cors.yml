@@ -1,6 +1,0 @@
-enabled: true
-allowedOrigins:
-  - ${ALLOW_ORIGIN:http://localhost:8080}
-allowedMethods:
-  - GET
-  - POST

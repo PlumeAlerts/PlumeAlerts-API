@@ -39,10 +39,6 @@ public class AuthAPI extends RoutingHandler {
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
 
-        if (accessToken == null) {
-            //TODO Failed due to inserting into the db
-            return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
-        }
         return ResponseUtil.successResponse(exchange, accessToken);
     }
 }
