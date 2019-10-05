@@ -20,8 +20,8 @@ public class HandlerUserAccessTokens {
     }
 
     public static AccessToken generateTokens(String userId, NumericDate expiredAt, NumericDate refreshExpiredAt) throws JoseException {
-        String accessToken = new JWT(userId, "access", expiredAt).generate();
-        String refreshToken = new JWT(userId, "refresh", refreshExpiredAt).generate();
+        String accessToken = new JWT(userId, TokenType.ACCESS_TOKEN, expiredAt).generate();
+        String refreshToken = new JWT(userId, TokenType.REFRESH_TOKEN, refreshExpiredAt).generate();
 
         return new AccessToken(accessToken, refreshToken, expiredAt.getValue(), refreshExpiredAt.getValue());
     }

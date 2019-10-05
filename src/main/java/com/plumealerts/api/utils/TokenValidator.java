@@ -3,6 +3,7 @@ package com.plumealerts.api.utils;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.DataError;
 import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
+import com.plumealerts.api.handler.user.TokenType;
 import io.undertow.server.HttpServerExchange;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -23,7 +24,11 @@ public class TokenValidator {
             if (claims == null) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
-            if (!claims.getClaimValue("type", String.class).equalsIgnoreCase("access")) {
+            if (!claims.hasClaim("type")) {
+                return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
+            }
+            TokenType tokenType = TokenType.valueOf(claims.getStringClaimValue("type"));
+            if (!TokenType.ACCESS_TOKEN.equals(tokenType)) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
             return new DataError<>(claims.getSubject());
@@ -47,13 +52,14 @@ public class TokenValidator {
             if (claims == null) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
-            if (!claims.getClaimValue("type", String.class).equalsIgnoreCase("refresh")) {
+            if (!claims.hasClaim("type")) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
-            if (claims.getAudience().size() != 0) {
+            TokenType tokenType = TokenType.valueOf(claims.getStringClaimValue("type"));
+            if (!TokenType.REFRESH_TOKEN.equals(tokenType)) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
-            return new DataError<>(claims.getAudience().get(0));
+            return new DataError<>(claims.getSubject());
         } catch (InvalidJwtException e) {
             if (e.hasExpired()) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Expired"));
