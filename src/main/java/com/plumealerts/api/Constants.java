@@ -6,6 +6,7 @@ public class Constants {
     public static final String TWITCH_CLIENT_SECRET = getRequiredValue("CLIENT_SECRET");
     public static final String TWITCH_CLIENT_REDIRECT = getRequiredValue("CLIENT_REDIRECT");
 
+    public static final String ALLOW_ORIGIN = getValueOrDefault("ALLOW_ORIGIN", "http://localhost:8080");
     public static final String DB_HOSTNAME = getValueOrDefault("DB_HOSTNAME", "jdbc:postgresql://localhost:5432/plumealerts");
     public static final String DB_USERNAME = getValueOrDefault("DB_USERNAME", "root");
     public static final String DB_PASSWORD = getValueOrDefault("DB_PASSWORD", "");
