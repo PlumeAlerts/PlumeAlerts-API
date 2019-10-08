@@ -29,4 +29,6 @@ public class ResponseUtil {
     public static Domain errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {
         return response(exchange, errorType.getCode(), new ErrorResponse(errorType, message));
     }
+
+
 }

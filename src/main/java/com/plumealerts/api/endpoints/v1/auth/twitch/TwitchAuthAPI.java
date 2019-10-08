@@ -109,12 +109,12 @@ public class TwitchAuthAPI extends RoutingHandler {
         if (loginRequestRecord == null) {
             return ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "The state is invalid");
         }
+        loginRequestRecord.delete();
 
         // Expire state after 30 minutes, force them to login in again.
         if (OffsetDateTime.now().isAfter(loginRequestRecord.getCreatedAt().plusMinutes(30))) {
             return ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State has expired");
         }
-        loginRequestRecord.delete();
 
         Token userToken;
         try {

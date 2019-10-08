@@ -40,7 +40,7 @@ public class PlumeAlertsAPI {
                 .setHandler(this.getHandler())
                 .build();
         server.start();
-        System.out.println("Started");
+        System.out.println("Started Server");
     }
 
     public HttpHandler getHandler() {

@@ -2,9 +2,13 @@ package com.plumealerts.api.handler;
 
 import com.github.twitch4j.helix.domain.User;
 import com.plumealerts.api.PlumeAlertsAPI;
+import com.plumealerts.api.db.tables.records.NotificationRecord;
+import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
 
-import static com.plumealerts.api.db.Tables.USERS;
+import java.util.List;
+
+import static com.plumealerts.api.db.Tables.*;
 
 public class HandlerUser {
 
@@ -34,5 +38,19 @@ public class HandlerUser {
                 .execute();
 
         return i == 1;
+    }
+
+    public static List<NotificationRecord> findUserNotifications(String userId) {
+        return PlumeAlertsAPI.dslContext().selectFrom(NOTIFICATION)
+                .where(NOTIFICATION.CHANNEL_ID.eq(userId))
+                .orderBy(NOTIFICATION.CREATED_AT.desc())
+                .limit(20)
+                .fetch();
+    }
+
+    public static TwitchFollowersRecord findFollowNotifications(Long id) {
+        return PlumeAlertsAPI.dslContext().selectFrom(TWITCH_FOLLOWERS)
+                .where(TWITCH_FOLLOWERS.NOTIFICATION_ID.eq(id))
+                .fetchOne();
     }
 }
