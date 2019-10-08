@@ -2,6 +2,10 @@ language: java
 jdk:
   - openjdk8
 
+branches:
+  only:
+    - master
+
 addons:
   sonarcloud:
     organization: "plumealerts"
