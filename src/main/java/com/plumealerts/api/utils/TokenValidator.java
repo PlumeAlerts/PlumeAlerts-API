@@ -14,6 +14,9 @@ public class TokenValidator {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
 
+    private TokenValidator() {
+    }
+
     public static DataError<String> getUserIdFromAccessToken(HttpServerExchange exchange) {
         String bearerToken = TokenValidator.getAuthorizationToken(exchange);
         if (bearerToken == null || !TokenValidator.isBearerToken(bearerToken)) {

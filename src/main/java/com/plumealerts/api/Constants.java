@@ -29,26 +29,9 @@ public class Constants {
     public static final String DB_USERNAME = getValueOrDefault("DB_USERNAME", "root");
     public static final String DB_PASSWORD = getValueOrDefault("DB_PASSWORD", "");
 
-    public static PublicKey publicKey;
-    public static PrivateKey privateKey;
-    public static KeyFactory keyFactory;
+    public static final PublicKey PUBLIC_KEY = getPublicKey("public.pem");
+    public static final PrivateKey PRIVATE_KEY = getPrivateKey("private.pem");
 
-    static {
-        //TODO Force stop or switch to not require a token
-        try {
-            keyFactory = KeyFactory.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        try {
-            publicKey = getPublicKey("public.pem");
-            privateKey = getPrivateKey("private.pem");
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private Constants() {
     }
@@ -69,20 +52,42 @@ public class Constants {
         return value;
     }
 
-    public static PrivateKey getPrivateKey(String fileLocation) throws InvalidKeySpecException, IOException {
-        String privateKey = getKey(fileLocation);
-        privateKey = privateKey.replace("-----BEGIN PRIVATE KEY-----", "");
-        privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
-        KeySpec spec = new PKCS8EncodedKeySpec(SimplePEMEncoder.decode(privateKey));
-        return keyFactory.generatePrivate(spec);
+    public static PrivateKey getPrivateKey(String fileLocation) {
+        try {
+            String privateKey = getKey(fileLocation);
+            privateKey = privateKey.replace("-----BEGIN PRIVATE KEY-----", "");
+            privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
+            KeySpec spec = new PKCS8EncodedKeySpec(SimplePEMEncoder.decode(privateKey));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePrivate(spec);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        System.exit(1); //TODO Handle better
+        return null;
     }
 
-    public static PublicKey getPublicKey(String fileLocation) throws InvalidKeySpecException, IOException {
-        String publicKey = getKey(fileLocation);
-        publicKey = publicKey.replace("-----BEGIN PUBLIC KEY-----", "");
-        publicKey = publicKey.replace("-----END PUBLIC KEY-----", "");
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(SimplePEMEncoder.decode(publicKey));
-        return keyFactory.generatePublic(spec);
+    public static PublicKey getPublicKey(String fileLocation) {
+        try {
+            String publicKey = getKey(fileLocation);
+            publicKey = publicKey.replace("-----BEGIN PUBLIC KEY-----", "");
+            publicKey = publicKey.replace("-----END PUBLIC KEY-----", "");
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(SimplePEMEncoder.decode(publicKey));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePublic(spec);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        System.exit(1); //TODO Handle better
+        return null;
     }
 
     public static String getKey(String fileLocation) throws IOException {

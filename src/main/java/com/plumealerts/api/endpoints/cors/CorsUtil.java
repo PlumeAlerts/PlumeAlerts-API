@@ -43,6 +43,9 @@ import static io.undertow.util.Headers.ORIGIN;
 public class CorsUtil {
     private static final Logger logger = LoggerFactory.getLogger(CorsUtil.class);
 
+    private CorsUtil() {
+    }
+
     public static boolean isCoreRequest(HeaderMap headers) {
         return headers.contains(ORIGIN)
                 || headers.contains(ACCESS_CONTROL_REQUEST_HEADERS)

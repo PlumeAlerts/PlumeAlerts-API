@@ -28,7 +28,7 @@ public class JWT extends JwtClaims {
     public String generate() throws JoseException {
         JsonWebSignature jws = new JsonWebSignature();
 
-        jws.setKey(Constants.privateKey);
+        jws.setKey(Constants.PRIVATE_KEY);
         jws.setAlgorithmHeaderValue(Constants.ALGORITHM_IDENTIFIERS);
 
         jws.setPayload(this.toJson());
@@ -43,7 +43,7 @@ public class JWT extends JwtClaims {
                 .setRequireSubject()
                 .setExpectedAudience(AUDIENCE)
                 .setExpectedIssuer(ISSUER)
-                .setVerificationKey(Constants.publicKey)
+                .setVerificationKey(Constants.PUBLIC_KEY)
                 .setJwsAlgorithmConstraints(new AlgorithmConstraints(AlgorithmConstraints.ConstraintType.WHITELIST, Constants.ALGORITHM_IDENTIFIERS))
                 .build();
         return jwtConsumer.processToClaims(token);

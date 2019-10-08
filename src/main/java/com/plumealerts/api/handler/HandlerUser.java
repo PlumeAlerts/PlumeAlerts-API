@@ -12,6 +12,9 @@ import static com.plumealerts.api.db.Tables.*;
 
 public class HandlerUser {
 
+    private HandlerUser() {
+    }
+
     public static boolean insertUser(User user) {
         int i = PlumeAlertsAPI.dslContext().insertInto(USERS, USERS.ID, USERS.EMAIL, USERS.LOGIN, USERS.DISPLAY_NAME, USERS.BROADCASTER_TYPE, USERS.TYPE, USERS.VIEW_COUNT)
                 .values(user.getId().toString(), user.getEmail(), user.getLogin(), user.getDisplayName(), user.getBroadcasterType(), user.getType(), Long.valueOf(user.getViewCount()))

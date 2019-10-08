@@ -15,6 +15,10 @@ import static com.plumealerts.api.db.Tables.USERS;
 
 public class HandlerTwitchUserAccessTokens {
 
+    private HandlerTwitchUserAccessTokens() {
+
+    }
+
     public static boolean setAccessToken(String userId, Token token) {
         int i = PlumeAlertsAPI.dslContext().insertInto(TWITCH_USER_ACCESS_TOKEN, TWITCH_USER_ACCESS_TOKEN.USER_ID, TWITCH_USER_ACCESS_TOKEN.ACCESS_TOKEN, TWITCH_USER_ACCESS_TOKEN.REFRESH_TOKEN, TWITCH_USER_ACCESS_TOKEN.EXPIRED_AT)
                 .values(userId, token.getAccessToken(), token.getRefreshToken(), token.getExpire())

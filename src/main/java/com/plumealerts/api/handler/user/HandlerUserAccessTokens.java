@@ -12,6 +12,9 @@ import java.time.temporal.ChronoUnit;
 
 public class HandlerUserAccessTokens {
 
+    private HandlerUserAccessTokens() {
+    }
+
     public static AccessToken generateTokens(String userId) throws JoseException {
         NumericDate expiredAt = NumericDate.fromSeconds(Instant.now().plus(60, ChronoUnit.MINUTES).getEpochSecond());
         NumericDate refreshExpiredAt = NumericDate.fromSeconds(Instant.now().plus(7, ChronoUnit.DAYS).getEpochSecond());
