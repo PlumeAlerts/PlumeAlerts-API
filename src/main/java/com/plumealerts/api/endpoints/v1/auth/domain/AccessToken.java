@@ -4,6 +4,9 @@ import com.plumealerts.api.endpoints.v1.domain.Domain;
 
 public class AccessToken extends Domain {
 
+    /**
+     *
+     */
     private String accessToken;
     private String refreshToken;
 
@@ -18,5 +21,21 @@ public class AccessToken extends Domain {
         this.refreshToken = refreshToken;
         this.expiredAt = expiredAt;
         this.refreshExpiredAt = refreshExpiredAt;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public long getExpiredAt() {
+        return expiredAt;
+    }
+
+    public long getRefreshExpiredAt() {
+        return refreshExpiredAt;
     }
 }

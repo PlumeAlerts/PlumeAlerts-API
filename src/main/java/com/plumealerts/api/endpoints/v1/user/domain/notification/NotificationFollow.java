@@ -7,4 +7,8 @@ public class NotificationFollow extends NotificationData {
         super(userId, createdAt, type);
         this.username = username;
     }
+
+    public String getUsername() {
+        return username;
+    }
 }

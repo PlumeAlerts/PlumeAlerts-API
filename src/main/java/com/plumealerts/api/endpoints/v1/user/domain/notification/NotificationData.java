@@ -10,4 +10,16 @@ public class NotificationData {
         this.createdAt = createdAt;
         this.type = type;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getType() {
+        return type;
+    }
 }
