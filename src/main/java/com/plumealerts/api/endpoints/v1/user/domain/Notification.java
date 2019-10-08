@@ -11,4 +11,8 @@ public class Notification extends Domain {
     public Notification(List<NotificationData> data) {
         this.data = data;
     }
+
+    public List<NotificationData> getData() {
+        return data;
+    }
 }

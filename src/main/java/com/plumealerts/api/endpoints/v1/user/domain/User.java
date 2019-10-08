@@ -16,4 +16,24 @@ public class User extends Domain {
         this.beta = beta;
         this.broadcasterType = broadcasterType;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public Boolean getBeta() {
+        return beta;
+    }
+
+    public String getBroadcasterType() {
+        return broadcasterType;
+    }
 }

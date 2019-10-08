@@ -36,8 +36,9 @@ import static io.undertow.server.handlers.ResponseCodeHandler.HANDLE_200;
 
 /**
  * Undertow handler for CORS headers.
- * @see "http://www.w3.org/TR/cors"
+ *
  * @author <a href="mailto:ehugonne@redhat.com">Emmanuel Hugonnet</a> (c) 2014 Red Hat, inc.
+ * @see "http://www.w3.org/TR/cors"
  */
 public class CorsHandler implements HttpHandler {
     public static final HttpString ACCESS_CONTROL_REQUEST_METHOD = new HttpString("Access-Control-Request-Method");
@@ -48,7 +49,7 @@ public class CorsHandler implements HttpHandler {
     public static final HttpString ACCESS_CONTROL_MAX_AGE = new HttpString("Access-Control-Max-Age");
     public static final HttpString ACCESS_CONTROL_ALLOW_METHODS = new HttpString("Access-Control-Allow-Methods");
     public static final HttpString ACCESS_CONTROL_ALLOW_HEADERS = new HttpString("Access-Control-Allow-Headers");
-    private static final long ONE_HOUR_IN_SECONDS = 60 * 60;
+    private static final long ONE_HOUR_IN_SECONDS = 60L * 60L;
 
     private static final List<String> allowedMethods = Arrays.asList("GET", "POST");
     private static final List<String> allowedOrigins = Arrays.asList(Constants.ALLOW_ORIGIN);
@@ -79,11 +80,9 @@ public class CorsHandler implements HttpHandler {
 
     private void setCorsResponseHeaders(HttpServerExchange exchange) throws Exception {
         HeaderMap headers = exchange.getRequestHeaders();
-        if (headers.contains(Headers.ORIGIN)) {
-            if (matchOrigin(exchange, allowedOrigins) != null) {
-                exchange.getResponseHeaders().addAll(ACCESS_CONTROL_ALLOW_ORIGIN, headers.get(Headers.ORIGIN));
-                exchange.getResponseHeaders().add(Headers.VARY, Headers.ORIGIN_STRING);
-            }
+        if (headers.contains(Headers.ORIGIN) && matchOrigin(exchange, allowedOrigins) != null) {
+            exchange.getResponseHeaders().addAll(ACCESS_CONTROL_ALLOW_ORIGIN, headers.get(Headers.ORIGIN));
+            exchange.getResponseHeaders().add(Headers.VARY, Headers.ORIGIN_STRING);
         }
         exchange.getResponseHeaders().addAll(ACCESS_CONTROL_ALLOW_METHODS, allowedMethods);
         HeaderValues requestedHeaders = headers.get(ACCESS_CONTROL_REQUEST_HEADERS);

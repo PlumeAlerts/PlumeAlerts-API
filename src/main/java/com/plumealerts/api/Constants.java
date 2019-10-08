@@ -29,20 +29,20 @@ public class Constants {
     public static final String DB_USERNAME = getValueOrDefault("DB_USERNAME", "root");
     public static final String DB_PASSWORD = getValueOrDefault("DB_PASSWORD", "");
 
-    public static PublicKey PUBLIC_KEY;
-    public static PrivateKey PRIVATE_KEY;
-    public static KeyFactory KEY_FACTORY;
+    public static PublicKey publicKey;
+    public static PrivateKey privateKey;
+    public static KeyFactory keyFactory;
 
     static {
         //TODO Force stop or switch to not require a token
         try {
-            KEY_FACTORY = KeyFactory.getInstance("RSA");
+            keyFactory = KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         try {
-            PUBLIC_KEY = getPublicKey("public.pem");
-            PRIVATE_KEY = getPrivateKey("private.pem");
+            publicKey = getPublicKey("public.pem");
+            privateKey = getPrivateKey("private.pem");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -74,7 +74,7 @@ public class Constants {
         privateKey = privateKey.replace("-----BEGIN PRIVATE KEY-----", "");
         privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
         KeySpec spec = new PKCS8EncodedKeySpec(SimplePEMEncoder.decode(privateKey));
-        return KEY_FACTORY.generatePrivate(spec);
+        return keyFactory.generatePrivate(spec);
     }
 
     public static PublicKey getPublicKey(String fileLocation) throws InvalidKeySpecException, IOException {
@@ -82,7 +82,7 @@ public class Constants {
         publicKey = publicKey.replace("-----BEGIN PUBLIC KEY-----", "");
         publicKey = publicKey.replace("-----END PUBLIC KEY-----", "");
         X509EncodedKeySpec spec = new X509EncodedKeySpec(SimplePEMEncoder.decode(publicKey));
-        return KEY_FACTORY.generatePublic(spec);
+        return keyFactory.generatePublic(spec);
     }
 
     public static String getKey(String fileLocation) throws IOException {
