@@ -1,11 +1,15 @@
 language: java
 jdk:
   - openjdk8
+
+addons:
+  sonarcloud:
+    organization: "plumealerts"
+    token: $SONAR_TOKEN
+
 install:
   - ./gradlew
-script:
-  - ./gradlew check
-#  Check for code style in the future
+
 deploy:
   ## Deploy
   - provider: script
@@ -13,6 +17,10 @@ deploy:
     script: ./gradlew jib
     on:
       branch: master
+
+after_deploy:
+  - ./gradlew sonarqube
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
