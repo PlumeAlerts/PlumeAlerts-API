@@ -41,10 +41,11 @@ public class HandlerUser {
     }
 
     public static List<NotificationRecord> findUserNotifications(String userId) {
+        //TODO Add pagination
         return PlumeAlertsAPI.dslContext().selectFrom(NOTIFICATION)
                 .where(NOTIFICATION.CHANNEL_ID.eq(userId))
                 .orderBy(NOTIFICATION.CREATED_AT.desc())
-                .limit(20)
+                .limit(15)
                 .fetch();
     }
 
