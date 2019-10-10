@@ -35,8 +35,9 @@ public class PlumeAlertsAPI {
 
         PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES);
 
+        //TODO Read a config value in the future
         Undertow server = Undertow.builder()
-                .addHttpListener(4567, "localhost")
+                .addHttpListener(4567, "0.0.0.0")
                 .setHandler(this.getHandler())
                 .build();
         server.start();
