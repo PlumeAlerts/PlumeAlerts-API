@@ -1,6 +1,7 @@
 package com.plumealerts.api.utils;
 
 import com.jsoniter.output.JsonStream;
+import com.plumealerts.api.endpoints.v1.domain.Data;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorResponse;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
@@ -21,8 +22,8 @@ public class ResponseUtil {
         return domain;
     }
 
-    public static Domain successResponse(HttpServerExchange exchange, Domain domain) {
-        return response(exchange, 200, domain);
+    public static Domain successResponse(HttpServerExchange exchange, Object data) {
+        return response(exchange, 200, new Data(data));
     }
 
 
