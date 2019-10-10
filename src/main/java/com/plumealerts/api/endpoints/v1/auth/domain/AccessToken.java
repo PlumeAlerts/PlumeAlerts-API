@@ -1,8 +1,6 @@
 package com.plumealerts.api.endpoints.v1.auth.domain;
 
-import com.plumealerts.api.endpoints.v1.domain.Domain;
-
-public class AccessToken extends Domain {
+public class AccessToken {
 
     /**
      *

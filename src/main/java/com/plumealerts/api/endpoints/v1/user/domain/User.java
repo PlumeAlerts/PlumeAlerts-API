@@ -1,8 +1,6 @@
 package com.plumealerts.api.endpoints.v1.user.domain;
 
-import com.plumealerts.api.endpoints.v1.domain.Domain;
-
-public class User extends Domain {
+public class User {
     private final String id;
     private final String login;
     private final String displayName;

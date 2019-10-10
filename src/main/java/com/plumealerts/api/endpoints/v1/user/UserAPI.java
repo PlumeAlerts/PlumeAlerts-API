@@ -5,7 +5,6 @@ import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
-import com.plumealerts.api.endpoints.v1.user.domain.Notification;
 import com.plumealerts.api.endpoints.v1.user.domain.User;
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationData;
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationFollow;
@@ -44,8 +43,7 @@ public class UserAPI extends RoutingHandler {
         if (dataError.hasError()) {
             return dataError.getError();
         }
-        String userId = dataError.getData();
-        List<NotificationRecord> notifications = HandlerUser.findUserNotifications(userId);
+        List<NotificationRecord> notifications = HandlerUser.findUserNotifications(dataError.getData());
         List<NotificationData> data = new ArrayList<>();
 
         for (NotificationRecord notification : notifications) {
@@ -54,7 +52,7 @@ public class UserAPI extends RoutingHandler {
                 data.add(new NotificationFollow(notification.getUserId(), follow.getFollowerUsername(), notification.getCreatedAt().toEpochSecond(), notification.getType()));
             }
         }
-        return ResponseUtil.successResponse(exchange, new Notification(data));
+        return ResponseUtil.successResponse(exchange, data);
     }
 
 }
