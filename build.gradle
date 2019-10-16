@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'io.undertow', name: 'undertow-core', version: '2.0.26.Final'
+    compile group: 'io.undertow', name: 'undertow-core', version: '2.0.27.Final'
     compile group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
     compile group: 'com.jsoniter', name: 'jsoniter', version: '0.9.23'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.12.1'
