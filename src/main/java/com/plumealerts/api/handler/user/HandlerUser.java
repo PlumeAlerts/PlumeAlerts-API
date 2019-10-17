@@ -1,10 +1,12 @@
-package com.plumealerts.api.handler;
+package com.plumealerts.api.handler.user;
 
 import com.github.twitch4j.helix.domain.User;
 import com.plumealerts.api.PlumeAlertsAPI;
+import com.plumealerts.api.db.tables.records.DashboardRecord;
 import com.plumealerts.api.db.tables.records.NotificationRecord;
 import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
+import com.plumealerts.api.endpoints.v1.user.domain.Dashboard;
 
 import java.util.List;
 
@@ -56,5 +58,32 @@ public class HandlerUser {
         return PlumeAlertsAPI.dslContext().selectFrom(TWITCH_FOLLOWERS)
                 .where(TWITCH_FOLLOWERS.NOTIFICATION_ID.eq(id))
                 .fetchOne();
+    }
+
+    public static List<DashboardRecord> findUserDashboard(String userId) {
+        return PlumeAlertsAPI.dslContext().selectFrom(DASHBOARD)
+                .where(DASHBOARD.USER_ID.eq(userId))
+                .fetch();
+    }
+
+    public static boolean insertDashboard(String userId, String type, short x, short y, short width, short height, boolean show) {
+        int i = PlumeAlertsAPI.dslContext().insertInto(DASHBOARD, DASHBOARD.USER_ID, DASHBOARD.TYPE, DASHBOARD.X, DASHBOARD.Y, DASHBOARD.WIDTH, DASHBOARD.HEIGHT, DASHBOARD.SHOW)
+                .values(userId, type, x, y, width, height, show)
+                .onDuplicateKeyIgnore()
+                .execute();
+
+        return i == 1;
+    }
+
+    public static boolean updateDashboard(String userId, DashboardTypes type, Dashboard dashboard) {
+        int i = PlumeAlertsAPI.dslContext().update(DASHBOARD)
+                .set(DASHBOARD.X, dashboard.getX())
+                .set(DASHBOARD.Y, dashboard.getY())
+                .set(DASHBOARD.WIDTH, dashboard.getWidth())
+                .set(DASHBOARD.HEIGHT, dashboard.getHeight())
+                .set(DASHBOARD.SHOW, dashboard.isShow())
+                .where(DASHBOARD.USER_ID.eq(userId).and(DASHBOARD.TYPE.eq(type.name())))
+                .execute();
+        return i == 1;
     }
 }

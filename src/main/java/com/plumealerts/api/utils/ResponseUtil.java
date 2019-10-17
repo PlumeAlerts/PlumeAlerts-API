@@ -1,12 +1,14 @@
 package com.plumealerts.api.utils;
 
-import com.jsoniter.output.JsonStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.plumealerts.api.endpoints.v1.domain.Data;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorResponse;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+
+import static com.plumealerts.api.PlumeAlertsAPI.MAPPER;
 
 public class ResponseUtil {
 
@@ -17,7 +19,12 @@ public class ResponseUtil {
         exchange.setStatusCode(status);
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
         if (domain != null) {
-            exchange.getResponseSender().send(JsonStream.serialize(domain));
+            try {
+                exchange.getResponseSender().send(MAPPER.writeValueAsString(domain));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+            }
         }
         return domain;
     }
