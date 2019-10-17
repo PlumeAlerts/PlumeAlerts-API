@@ -29,6 +29,7 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index DASHBOARD_PKEY = Indexes0.DASHBOARD_PKEY;
     public static final Index NOTIFICATION_PKEY = Indexes0.NOTIFICATION_PKEY;
     public static final Index SCOPES_PKEY = Indexes0.SCOPES_PKEY;
     public static final Index TWITCH_BITS_MESSAGE_ID_KEY = Indexes0.TWITCH_BITS_MESSAGE_ID_KEY;
@@ -46,6 +47,7 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index DASHBOARD_PKEY = Internal.createIndex("dashboard_pkey", Dashboard.DASHBOARD, new OrderField[]{Dashboard.DASHBOARD.USER_ID, Dashboard.DASHBOARD.TYPE}, true);
         public static Index NOTIFICATION_PKEY = Internal.createIndex("notification_pkey", Notification.NOTIFICATION, new OrderField[]{Notification.NOTIFICATION.ID}, true);
         public static Index SCOPES_PKEY = Internal.createIndex("scopes_pkey", Scopes.SCOPES, new OrderField[]{Scopes.SCOPES.SCOPE}, true);
         public static Index TWITCH_BITS_MESSAGE_ID_KEY = Internal.createIndex("twitch_bits_message_id_key", TwitchBits.TWITCH_BITS, new OrderField[]{TwitchBits.TWITCH_BITS.MESSAGE_ID}, true);

@@ -27,7 +27,7 @@ public class UserFollower implements FutureRequest {
 
     @Override
     public void execute() {
-        FollowList followList = TwitchAPI.helix().getFollowers(this.token, null, Long.valueOf(this.channelId), this.cursor, 100).execute();
+        FollowList followList = TwitchAPI.helix().getFollowers(this.token, null, this.channelId, this.cursor, 100).execute();
         List<Follow> followers = followList.getFollows();
         if (followers == null || followers.isEmpty()) {
             return;

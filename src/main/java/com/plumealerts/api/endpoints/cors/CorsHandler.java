@@ -51,7 +51,7 @@ public class CorsHandler implements HttpHandler {
     public static final HttpString ACCESS_CONTROL_ALLOW_HEADERS = new HttpString("Access-Control-Allow-Headers");
     private static final long ONE_HOUR_IN_SECONDS = 60L * 60L;
 
-    private static final List<String> allowedMethods = Arrays.asList("GET", "POST");
+    private static final List<String> allowedMethods = Arrays.asList("GET", "POST", "PUT");
     private static final List<String> allowedOrigins = Arrays.asList(Constants.ALLOW_ORIGIN);
     private HttpHandler next;
 

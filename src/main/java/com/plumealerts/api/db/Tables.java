@@ -23,6 +23,11 @@ import javax.annotation.Generated;
 public class Tables {
 
     /**
+     * The table <code>public.dashboard</code>.
+     */
+    public static final Dashboard DASHBOARD = Dashboard.DASHBOARD;
+
+    /**
      * The table <code>public.notification</code>.
      */
     public static final Notification NOTIFICATION = Notification.NOTIFICATION;

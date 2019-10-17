@@ -14,7 +14,8 @@ import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.HandlerTwitchUserAccessTokens;
-import com.plumealerts.api.handler.HandlerUser;
+import com.plumealerts.api.handler.user.DashboardTypes;
+import com.plumealerts.api.handler.user.HandlerUser;
 import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
 import com.plumealerts.api.ratelimit.future.UserFollower;
 import com.plumealerts.api.twitch.TwitchAPI;
@@ -139,11 +140,11 @@ public class TwitchAuthAPI extends RoutingHandler {
         User user = users.getUsers().get(0);
         String userId = user.getId().toString();
 
-        boolean newUser = false;
         UsersRecord usersRecord = HandlerUser.findUser(userId);
         if (usersRecord == null) {
             HandlerUser.insertUser(user);
-            newUser = true;
+            HandlerTwitchUserAccessTokens.setAccessToken(userId, userToken);
+            PlumeAlertsAPI.request().add(new UserFollower(userId, userToken.getAccessToken()));
         } else {
             if (!usersRecord.getEmail().equalsIgnoreCase(user.getEmail())) {
                 //TODO FUTURE PROOF, ASK THEM IF THEY WANT TO CHANGE THEIR EMAIL. Implement a system so it doesn't ask them every time though
@@ -154,26 +155,17 @@ public class TwitchAuthAPI extends RoutingHandler {
                 return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             }
             HandlerUser.updateUser(user);
-        }
-
-        if (newUser) {
-            HandlerTwitchUserAccessTokens.setAccessToken(userId, userToken);
-            PlumeAlertsAPI.request().add(new UserFollower(userId, userToken.getAccessToken()));
-            //TODO Fetch mods
-        } else {
             HandlerTwitchUserAccessTokens.updateAccessToken(userId, userToken);
         }
+
+        HandlerUser.insertDashboard(userId, DashboardTypes.CHAT.name(), (short) 7, (short) 0, (short) 3, (short) 20, true);
+        HandlerUser.insertDashboard(userId, DashboardTypes.NOTIFICATION.name(), (short) 0, (short) 0, (short) 5, (short) 10, true);
 
         AccessToken accessToken;
         try {
             accessToken = HandlerUserAccessTokens.generateTokens(userId);
         } catch (JoseException e) {
             e.printStackTrace();
-            return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
-        }
-
-        if (accessToken == null) {
-            //TODO Failed due to inserting into the db
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
         return ResponseUtil.successResponse(exchange, accessToken);

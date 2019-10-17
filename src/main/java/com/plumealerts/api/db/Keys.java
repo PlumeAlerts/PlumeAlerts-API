@@ -36,6 +36,7 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<DashboardRecord> DASHBOARD_PKEY = UniqueKeys0.DASHBOARD_PKEY;
     public static final UniqueKey<NotificationRecord> NOTIFICATION_PKEY = UniqueKeys0.NOTIFICATION_PKEY;
     public static final UniqueKey<ScopesRecord> SCOPES_PKEY = UniqueKeys0.SCOPES_PKEY;
     public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_PKEY = UniqueKeys0.TWITCH_BITS_PKEY;
@@ -52,6 +53,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<DashboardRecord, UsersRecord> DASHBOARD__DASHBOARD_USER_ID_FKEY = ForeignKeys0.DASHBOARD__DASHBOARD_USER_ID_FKEY;
     public static final ForeignKey<NotificationRecord, UsersRecord> NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY = ForeignKeys0.NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY;
     public static final ForeignKey<TwitchBitsRecord, NotificationRecord> TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY;
     public static final ForeignKey<TwitchFollowersRecord, NotificationRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY = ForeignKeys0.TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY;
@@ -65,6 +67,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class UniqueKeys0 {
+        public static final UniqueKey<DashboardRecord> DASHBOARD_PKEY = Internal.createUniqueKey(Dashboard.DASHBOARD, "dashboard_pkey", Dashboard.DASHBOARD.USER_ID, Dashboard.DASHBOARD.TYPE);
         public static final UniqueKey<NotificationRecord> NOTIFICATION_PKEY = Internal.createUniqueKey(Notification.NOTIFICATION, "notification_pkey", Notification.NOTIFICATION.ID);
         public static final UniqueKey<ScopesRecord> SCOPES_PKEY = Internal.createUniqueKey(Scopes.SCOPES, "scopes_pkey", Scopes.SCOPES.SCOPE);
         public static final UniqueKey<TwitchBitsRecord> TWITCH_BITS_PKEY = Internal.createUniqueKey(TwitchBits.TWITCH_BITS, "twitch_bits_pkey", TwitchBits.TWITCH_BITS.NOTIFICATION_ID);
@@ -79,6 +82,7 @@ public class Keys {
     }
 
     private static class ForeignKeys0 {
+        public static final ForeignKey<DashboardRecord, UsersRecord> DASHBOARD__DASHBOARD_USER_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, Dashboard.DASHBOARD, "dashboard__dashboard_user_id_fkey", Dashboard.DASHBOARD.USER_ID);
         public static final ForeignKey<NotificationRecord, UsersRecord> NOTIFICATION__NOTIFICATION_CHANNEL_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.USERS_PKEY, Notification.NOTIFICATION, "notification__notification_channel_id_fkey", Notification.NOTIFICATION.CHANNEL_ID);
         public static final ForeignKey<TwitchBitsRecord, NotificationRecord> TWITCH_BITS__TWITCH_BITS_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchBits.TWITCH_BITS, "twitch_bits__twitch_bits_notification_id_fkey", TwitchBits.TWITCH_BITS.NOTIFICATION_ID);
         public static final ForeignKey<TwitchFollowersRecord, NotificationRecord> TWITCH_FOLLOWERS__TWITCH_FOLLOWERS_NOTIFICATION_ID_FKEY = Internal.createForeignKey(com.plumealerts.api.db.Keys.NOTIFICATION_PKEY, TwitchFollowers.TWITCH_FOLLOWERS, "twitch_followers__twitch_followers_notification_id_fkey", TwitchFollowers.TWITCH_FOLLOWERS.NOTIFICATION_ID);
