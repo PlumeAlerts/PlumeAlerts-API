@@ -2,9 +2,6 @@ package com.plumealerts.api.endpoints.v1.auth.domain;
 
 public class AccessToken {
 
-    /**
-     *
-     */
     private String accessToken;
     private String refreshToken;
 

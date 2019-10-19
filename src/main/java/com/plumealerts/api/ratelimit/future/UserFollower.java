@@ -34,7 +34,7 @@ public class UserFollower implements FutureRequest {
         }
 
         for (Follow usersFollow : followers) {
-            String followerId = usersFollow.getFromId().toString();
+            String followerId = usersFollow.getFromId();
             OffsetDateTime createdAt = OffsetDateTime.of(usersFollow.getFollowedAt(), ZoneOffset.UTC);
 
             Result<Record1<Long>> x = PlumeAlertsAPI.dslContext().insertInto(NOTIFICATION, NOTIFICATION.CHANNEL_ID, NOTIFICATION.USER_ID, NOTIFICATION.CREATED_AT, NOTIFICATION.TYPE)

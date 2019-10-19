@@ -1,6 +1,8 @@
 package com.plumealerts.api.handler.user;
 
 import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
+import com.plumealerts.api.handler.user.jwt.JWT;
+import com.plumealerts.api.handler.user.jwt.TokenType;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -10,9 +12,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 
-public class HandlerUserAccessTokens {
+public class AccessTokenHandler {
 
-    private HandlerUserAccessTokens() {
+    private AccessTokenHandler() {
     }
 
     public static AccessToken generateTokens(String userId) throws JoseException {

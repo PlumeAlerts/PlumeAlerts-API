@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.plumealerts.api.endpoints.cors;
+package com.plumealerts.api.utils.cors;
 
 import com.plumealerts.api.Constants;
 import io.undertow.server.HttpHandler;
@@ -31,7 +31,7 @@ import io.undertow.util.HttpString;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.plumealerts.api.endpoints.cors.CorsUtil.matchOrigin;
+import static com.plumealerts.api.utils.cors.CorsUtil.matchOrigin;
 import static io.undertow.server.handlers.ResponseCodeHandler.HANDLE_200;
 
 /**

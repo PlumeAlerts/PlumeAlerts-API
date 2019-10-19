@@ -4,7 +4,7 @@ import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.DataError;
-import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
+import com.plumealerts.api.handler.user.AccessTokenHandler;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;
 import io.undertow.server.HttpServerExchange;
@@ -33,7 +33,7 @@ public class AuthAPI extends RoutingHandler {
         }
         AccessToken accessToken;
         try {
-            accessToken = HandlerUserAccessTokens.generateTokens(dataError.getData());
+            accessToken = AccessTokenHandler.generateTokens(dataError.getData());
         } catch (JoseException e) {
             e.printStackTrace();
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");

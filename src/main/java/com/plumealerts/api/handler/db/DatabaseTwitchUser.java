@@ -1,4 +1,4 @@
-package com.plumealerts.api.handler;
+package com.plumealerts.api.handler.db;
 
 import com.plumealerts.api.Constants;
 import com.plumealerts.api.PlumeAlertsAPI;
@@ -13,10 +13,9 @@ import java.time.OffsetDateTime;
 import static com.plumealerts.api.db.Tables.TWITCH_USER_ACCESS_TOKEN;
 import static com.plumealerts.api.db.Tables.USERS;
 
-public class HandlerTwitchUserAccessTokens {
+public class DatabaseTwitchUser {
 
-    private HandlerTwitchUserAccessTokens() {
-
+    private DatabaseTwitchUser() {
     }
 
     public static boolean setAccessToken(String userId, Token token) {
@@ -43,7 +42,7 @@ public class HandlerTwitchUserAccessTokens {
                 //TODO Error somehow?
             }
             if (validate == null) {
-                //TODO Probably wrong and add buffer
+                //TODO Probably wrong and add time buffer
                 if (OffsetDateTime.now().isBefore(accessTokenRecord.getExpiredAt())) {
                     RefreshToken refreshToken = TwitchAPI.oAuth2().refresh(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, accessTokenRecord.getRefreshToken()).execute();
                     if (refreshToken != null) {

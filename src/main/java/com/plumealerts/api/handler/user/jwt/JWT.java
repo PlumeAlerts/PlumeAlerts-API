@@ -1,4 +1,4 @@
-package com.plumealerts.api.handler.user;
+package com.plumealerts.api.handler.user.jwt;
 
 import com.plumealerts.api.Constants;
 import org.jose4j.jwa.AlgorithmConstraints;
@@ -48,6 +48,4 @@ public class JWT extends JwtClaims {
                 .build();
         return jwtConsumer.processToClaims(token);
     }
-
-
 }
