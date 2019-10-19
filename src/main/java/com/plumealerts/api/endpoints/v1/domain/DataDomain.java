@@ -1,12 +1,12 @@
 package com.plumealerts.api.endpoints.v1.domain;
 
-public class Data<T> extends Domain {
+public class DataDomain<T> extends Domain {
     private T data;
 
-    private Data() {
+    private DataDomain() {
     }
 
-    public Data(T data) {
+    public DataDomain(T data) {
         this.data = data;
     }
 

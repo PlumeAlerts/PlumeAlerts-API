@@ -17,7 +17,8 @@ public class TokenValidator {
     private TokenValidator() {
     }
 
-    public static DataError<String> getUserIdFromAccessToken(HttpServerExchange exchange) {
+
+    public static DataError<String> getUserIdFromToken(HttpServerExchange exchange, TokenType type) {
         String bearerToken = TokenValidator.getAuthorizationToken(exchange);
         if (bearerToken == null || !TokenValidator.isBearerToken(bearerToken)) {
             return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
@@ -31,7 +32,7 @@ public class TokenValidator {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
             TokenType tokenType = TokenType.valueOf(claims.getStringClaimValue("type"));
-            if (!TokenType.ACCESS_TOKEN.equals(tokenType)) {
+            if (!type.equals(tokenType)) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
             return new DataError<>(claims.getSubject());
@@ -45,32 +46,12 @@ public class TokenValidator {
         }
     }
 
+    public static DataError<String> getUserIdFromAccessToken(HttpServerExchange exchange) {
+        return getUserIdFromToken(exchange, TokenType.ACCESS_TOKEN);
+    }
+
     public static DataError<String> getUserIdFromRefreshToken(HttpServerExchange exchange) {
-        String bearerToken = TokenValidator.getAuthorizationToken(exchange);
-        if (bearerToken == null || !TokenValidator.isBearerToken(bearerToken)) {
-            return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-        }
-        try {
-            JwtClaims claims = AccessTokenHandler.getAccessToken(getToken(bearerToken));
-            if (claims == null) {
-                return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-            }
-            if (!claims.hasClaim("type")) {
-                return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-            }
-            TokenType tokenType = TokenType.valueOf(claims.getStringClaimValue("type"));
-            if (!TokenType.REFRESH_TOKEN.equals(tokenType)) {
-                return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-            }
-            return new DataError<>(claims.getSubject());
-        } catch (InvalidJwtException e) {
-            if (e.hasExpired()) {
-                return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Expired"));
-            }
-            return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-        } catch (MalformedClaimException e) {
-            return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
-        }
+        return getUserIdFromToken(exchange, TokenType.REFRESH_TOKEN);
     }
 
     public static String getToken(String bearerToken) {

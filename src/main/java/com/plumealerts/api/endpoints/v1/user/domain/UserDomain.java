@@ -1,13 +1,13 @@
 package com.plumealerts.api.endpoints.v1.user.domain;
 
-public class User {
+public class UserDomain {
     private final String id;
     private final String login;
     private final String displayName;
     private final Boolean beta;
     private final String broadcasterType;
 
-    public User(String id, String login, String displayName, Boolean beta, String broadcasterType) {
+    public UserDomain(String id, String login, String displayName, Boolean beta, String broadcasterType) {
         this.id = id;
         this.login = login;
         this.displayName = displayName;

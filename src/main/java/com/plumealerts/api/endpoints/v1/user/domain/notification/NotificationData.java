@@ -1,9 +1,9 @@
 package com.plumealerts.api.endpoints.v1.user.domain.notification;
 
 public class NotificationData {
-    public String userId;
-    public long createdAt;
-    public String type;
+    private final String userId;
+    private final String type;
+    private final long createdAt;
 
     public NotificationData(String userId, long createdAt, String type) {
         this.userId = userId;

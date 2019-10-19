@@ -27,6 +27,7 @@ public class RateLimitHandler {
 
     /**
      * Add a request to the queue
+     *
      * @param futureRequest The request you are adding to the queue
      */
     public void add(FutureRequest futureRequest) {

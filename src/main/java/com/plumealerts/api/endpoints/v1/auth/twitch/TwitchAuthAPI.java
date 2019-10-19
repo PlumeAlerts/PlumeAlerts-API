@@ -8,7 +8,7 @@ import com.plumealerts.api.Constants;
 import com.plumealerts.api.PlumeAlertsAPI;
 import com.plumealerts.api.db.tables.records.ScopesRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
-import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
+import com.plumealerts.api.endpoints.v1.auth.domain.AccessTokenDomain;
 import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
@@ -31,11 +31,16 @@ import org.jose4j.lang.JoseException;
 import java.net.URISyntaxException;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.plumealerts.api.db.Tables.SCOPES;
 import static com.plumealerts.api.db.Tables.USER_LOGIN_REQUEST;
 
 public class TwitchAuthAPI extends RoutingHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(TwitchAuthAPI.class.getName());
+
     private String scopes;
 
     public TwitchAuthAPI() {
@@ -60,7 +65,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         try {
             ub = new URIBuilder("https://id.twitch.tv/oauth2/authorize");
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error creating uri", e);
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, null);
         }
         ub.addParameter("client_id", Constants.TWITCH_CLIENT_ID);
@@ -140,11 +145,11 @@ public class TwitchAuthAPI extends RoutingHandler {
         DatabaseUser.insertDashboard(userId, DashboardType.CHAT.name(), (short) 7, (short) 0, (short) 3, (short) 20, true);
         DatabaseUser.insertDashboard(userId, DashboardType.NOTIFICATION.name(), (short) 0, (short) 0, (short) 5, (short) 10, true);
 
-        AccessToken accessToken;
+        AccessTokenDomain accessToken;
         try {
             accessToken = AccessTokenHandler.generateTokens(userId);
         } catch (JoseException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error making jwt token", e);
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
         return ResponseUtil.successResponse(exchange, accessToken);

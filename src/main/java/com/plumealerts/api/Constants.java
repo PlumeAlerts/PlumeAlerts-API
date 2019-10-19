@@ -15,6 +15,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Constants {
 
@@ -32,6 +34,7 @@ public class Constants {
     public static final PublicKey PUBLIC_KEY = getPublicKey("public.pem");
     public static final PrivateKey PRIVATE_KEY = getPrivateKey("private.pem");
 
+    private static final Logger LOGGER = Logger.getLogger(Constants.class.getName());
 
     private Constants() {
     }
@@ -39,7 +42,7 @@ public class Constants {
     private static String getRequiredValue(String env) {
         String value = System.getenv(env);
         if (value == null) {
-            System.err.println("Missing env variable " + env);
+            LOGGER.severe("Missing env variable");
             System.exit(1);
         }
         return value;
@@ -60,12 +63,8 @@ public class Constants {
             KeySpec spec = new PKCS8EncodedKeySpec(SimplePEMEncoder.decode(privateKey));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(spec);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+        } catch (IOException | InvalidKeySpecException | NoSuchAlgorithmException e) {
+            LOGGER.log(Level.SEVERE, "Private Key", e);
         }
         System.exit(1); //TODO Handle better
         return null;
@@ -79,12 +78,8 @@ public class Constants {
             X509EncodedKeySpec spec = new X509EncodedKeySpec(SimplePEMEncoder.decode(publicKey));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(spec);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            LOGGER.log(Level.SEVERE, "Public Key", e);
         }
         System.exit(1); //TODO Handle better
         return null;

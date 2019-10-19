@@ -6,7 +6,7 @@ import com.plumealerts.api.db.tables.records.DashboardRecord;
 import com.plumealerts.api.db.tables.records.NotificationRecord;
 import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
-import com.plumealerts.api.endpoints.v1.user.domain.Dashboard;
+import com.plumealerts.api.endpoints.v1.user.domain.DashboardDomain;
 import com.plumealerts.api.handler.user.DashboardType;
 
 import java.util.List;
@@ -76,7 +76,7 @@ public class DatabaseUser {
         return i == 1;
     }
 
-    public static boolean updateDashboard(String userId, DashboardType type, Dashboard dashboard) {
+    public static boolean updateDashboard(String userId, DashboardType type, DashboardDomain dashboard) {
         int i = PlumeAlertsAPI.dslContext().update(DASHBOARD)
                 .set(DASHBOARD.X, dashboard.getX())
                 .set(DASHBOARD.Y, dashboard.getY())

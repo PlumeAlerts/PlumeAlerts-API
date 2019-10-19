@@ -1,6 +1,6 @@
 package com.plumealerts.api.endpoints.v1.auth;
 
-import com.plumealerts.api.endpoints.v1.auth.domain.AccessToken;
+import com.plumealerts.api.endpoints.v1.auth.domain.AccessTokenDomain;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.DataError;
@@ -11,7 +11,12 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 import org.jose4j.lang.JoseException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class AuthAPI extends RoutingHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(AuthAPI.class.getName());
 
     public AuthAPI() {
         this.post("/v1/auth/validate", this::postValidate);
@@ -31,11 +36,11 @@ public class AuthAPI extends RoutingHandler {
         if (dataError.hasError()) {
             return dataError.getError();
         }
-        AccessToken accessToken;
+        AccessTokenDomain accessToken;
         try {
             accessToken = AccessTokenHandler.generateTokens(dataError.getData());
         } catch (JoseException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error making jwt token", e);
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
 

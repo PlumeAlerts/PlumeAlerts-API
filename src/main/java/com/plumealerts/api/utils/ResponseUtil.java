@@ -1,16 +1,20 @@
 package com.plumealerts.api.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.plumealerts.api.endpoints.v1.domain.Data;
+import com.plumealerts.api.endpoints.v1.domain.DataDomain;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorResponse;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static com.plumealerts.api.PlumeAlertsAPI.MAPPER;
 
 public class ResponseUtil {
+    private static final Logger LOGGER = Logger.getLogger(ResponseUtil.class.getName());
 
     private ResponseUtil() {
     }
@@ -22,7 +26,7 @@ public class ResponseUtil {
             try {
                 exchange.getResponseSender().send(MAPPER.writeValueAsString(domain));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error writing json", e);
                 return errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
             }
         }
@@ -30,7 +34,7 @@ public class ResponseUtil {
     }
 
     public static Domain successResponse(HttpServerExchange exchange, Object data) {
-        return response(exchange, 200, new Data(data));
+        return response(exchange, 200, new DataDomain(data));
     }
 
     public static Domain errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {

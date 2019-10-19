@@ -1,6 +1,6 @@
 package com.plumealerts.api.endpoints.v1.user.domain;
 
-public class Dashboard {
+public class DashboardDomain {
     private String type;
     private Short x;
     private Short y;
@@ -8,10 +8,10 @@ public class Dashboard {
     private Short height;
     private boolean show;
 
-    public Dashboard() {
+    public DashboardDomain() {
     }
 
-    public Dashboard(String type, Short x, Short y, Short width, Short height, boolean show) {
+    public DashboardDomain(String type, Short x, Short y, Short width, Short height, boolean show) {
         this.type = type;
         this.x = x;
         this.y = y;

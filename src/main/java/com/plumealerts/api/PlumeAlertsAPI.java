@@ -17,10 +17,14 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import java.util.logging.Logger;
+
 public class PlumeAlertsAPI {
+    private static final Logger LOGGER = Logger.getLogger(PlumeAlertsAPI.class.getName());
+    public static final ObjectMapper MAPPER = new ObjectMapper();
+
     private static DSLContext dslContext;
     private static RateLimitHandler requestHandler;
-    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
         HikariDataSource ds = new HikariDataSource();
@@ -46,7 +50,8 @@ public class PlumeAlertsAPI {
                 .setHandler(this.getHandler())
                 .build();
         server.start();
-        System.out.println("Started Server");
+
+        LOGGER.info("Server starting");
     }
 
     public HttpHandler getHandler() {
@@ -59,6 +64,7 @@ public class PlumeAlertsAPI {
 
     /**
      * Create the RateLimitHandler used for making requests to Twitch that are rate limited.
+     *
      * @return The class that handles requests.
      */
     public static RateLimitHandler request() {
