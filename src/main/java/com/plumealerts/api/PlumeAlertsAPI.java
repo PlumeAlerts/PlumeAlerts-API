@@ -1,11 +1,11 @@
 package com.plumealerts.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plumealerts.api.endpoints.cors.CorsHandler;
 import com.plumealerts.api.endpoints.v1.auth.AuthAPI;
 import com.plumealerts.api.endpoints.v1.auth.twitch.TwitchAuthAPI;
 import com.plumealerts.api.endpoints.v1.user.UserAPI;
 import com.plumealerts.api.ratelimit.RateLimitHandler;
+import com.plumealerts.api.utils.cors.CorsHandler;
 import com.zaxxer.hikari.HikariDataSource;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -22,13 +22,7 @@ public class PlumeAlertsAPI {
     private static RateLimitHandler requestHandler;
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static void main(String[] args) {
-        new PlumeAlertsAPI().start();
-    }
-
-    private void start() {
-        System.getProperties().setProperty("org.jooq.no-logo", "true");
-
+    static {
         HikariDataSource ds = new HikariDataSource();
         ds.setJdbcUrl(Constants.DB_HOSTNAME);
         ds.setUsername(Constants.DB_USERNAME);
@@ -37,6 +31,14 @@ public class PlumeAlertsAPI {
         flyway.migrate();
 
         PlumeAlertsAPI.dslContext = DSL.using(ds, SQLDialect.POSTGRES);
+    }
+
+    public static void main(String[] args) {
+        new PlumeAlertsAPI().start();
+    }
+
+    private void start() {
+        System.getProperties().setProperty("org.jooq.no-logo", "true");
 
         //TODO Read a config value in the future
         Undertow server = Undertow.builder()
@@ -55,10 +57,15 @@ public class PlumeAlertsAPI {
         return new BlockingHandler(new CorsHandler(routing));
     }
 
+    /**
+     * Create the RateLimitHandler used for making requests to Twitch that are rate limited.
+     * @return The class that handles requests.
+     */
     public static RateLimitHandler request() {
         if (requestHandler == null) {
             requestHandler = new RateLimitHandler();
         }
+
         return requestHandler;
     }
 

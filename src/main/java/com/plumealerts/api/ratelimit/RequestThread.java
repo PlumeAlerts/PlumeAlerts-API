@@ -3,7 +3,9 @@ package com.plumealerts.api.ratelimit;
 import com.plumealerts.api.ratelimit.future.FutureRequest;
 import org.apache.commons.lang3.concurrent.TimedSemaphore;
 
-//TODO On error, reconnect
+/**
+ *
+ */
 public class RequestThread extends Thread {
     private final TimedSemaphore semaphore;
 

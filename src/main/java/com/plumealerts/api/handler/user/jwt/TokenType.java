@@ -1,5 +1,8 @@
-package com.plumealerts.api.handler.user;
+package com.plumealerts.api.handler.user.jwt;
 
+/**
+ * The type of token being created
+ */
 public enum TokenType {
     ACCESS_TOKEN("access"),
     REFRESH_TOKEN("refresh");

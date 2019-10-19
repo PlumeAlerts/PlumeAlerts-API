@@ -1,4 +1,4 @@
-package com.plumealerts.api.handler.user;
+package com.plumealerts.api.handler.db;
 
 import com.github.twitch4j.helix.domain.User;
 import com.plumealerts.api.PlumeAlertsAPI;
@@ -7,19 +7,20 @@ import com.plumealerts.api.db.tables.records.NotificationRecord;
 import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
 import com.plumealerts.api.db.tables.records.UsersRecord;
 import com.plumealerts.api.endpoints.v1.user.domain.Dashboard;
+import com.plumealerts.api.handler.user.DashboardType;
 
 import java.util.List;
 
 import static com.plumealerts.api.db.Tables.*;
 
-public class HandlerUser {
+public class DatabaseUser {
 
-    private HandlerUser() {
+    private DatabaseUser() {
     }
 
     public static boolean insertUser(User user) {
         int i = PlumeAlertsAPI.dslContext().insertInto(USERS, USERS.ID, USERS.EMAIL, USERS.LOGIN, USERS.DISPLAY_NAME, USERS.BROADCASTER_TYPE, USERS.TYPE, USERS.VIEW_COUNT)
-                .values(user.getId().toString(), user.getEmail(), user.getLogin(), user.getDisplayName(), user.getBroadcasterType(), user.getType(), Long.valueOf(user.getViewCount()))
+                .values(user.getId(), user.getEmail(), user.getLogin(), user.getDisplayName(), user.getBroadcasterType(), user.getType(), Long.valueOf(user.getViewCount()))
                 .execute();
 
         return i == 1;
@@ -39,7 +40,7 @@ public class HandlerUser {
                 .set(USERS.TYPE, user.getType())
                 .set(USERS.VIEW_COUNT, Long.valueOf(user.getViewCount()))
                 .set(USERS.REFRESH_LOGIN, false)
-                .where(USERS.ID.eq(user.getId().toString()))
+                .where(USERS.ID.eq(user.getId()))
                 .execute();
 
         return i == 1;
@@ -75,7 +76,7 @@ public class HandlerUser {
         return i == 1;
     }
 
-    public static boolean updateDashboard(String userId, DashboardTypes type, Dashboard dashboard) {
+    public static boolean updateDashboard(String userId, DashboardType type, Dashboard dashboard) {
         int i = PlumeAlertsAPI.dslContext().update(DASHBOARD)
                 .set(DASHBOARD.X, dashboard.getX())
                 .set(DASHBOARD.Y, dashboard.getY())

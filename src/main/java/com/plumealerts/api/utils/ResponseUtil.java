@@ -33,10 +33,7 @@ public class ResponseUtil {
         return response(exchange, 200, new Data(data));
     }
 
-
     public static Domain errorResponse(HttpServerExchange exchange, ErrorType errorType, String message) {
         return response(exchange, errorType.getCode(), new ErrorResponse(errorType, message));
     }
-
-
 }

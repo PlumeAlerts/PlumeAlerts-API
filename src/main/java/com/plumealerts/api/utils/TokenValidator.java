@@ -2,8 +2,8 @@ package com.plumealerts.api.utils;
 
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.DataError;
-import com.plumealerts.api.handler.user.HandlerUserAccessTokens;
-import com.plumealerts.api.handler.user.TokenType;
+import com.plumealerts.api.handler.user.AccessTokenHandler;
+import com.plumealerts.api.handler.user.jwt.TokenType;
 import io.undertow.server.HttpServerExchange;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -23,7 +23,7 @@ public class TokenValidator {
             return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
         }
         try {
-            JwtClaims claims = HandlerUserAccessTokens.getAccessToken(getToken(bearerToken));
+            JwtClaims claims = AccessTokenHandler.getAccessToken(getToken(bearerToken));
             if (claims == null) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
@@ -51,7 +51,7 @@ public class TokenValidator {
             return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
         }
         try {
-            JwtClaims claims = HandlerUserAccessTokens.getAccessToken(getToken(bearerToken));
+            JwtClaims claims = AccessTokenHandler.getAccessToken(getToken(bearerToken));
             if (claims == null) {
                 return DataError.error(ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, ""));
             }
