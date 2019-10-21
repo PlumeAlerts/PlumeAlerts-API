@@ -87,4 +87,12 @@ public class DatabaseUser {
                 .execute();
         return i == 1;
     }
+
+    public static boolean updateNotification(String userId, long id, boolean hide) {
+        int i = PlumeAlertsAPI.dslContext().update(NOTIFICATION)
+                .set(NOTIFICATION.HIDE, hide)
+                .where(NOTIFICATION.ID.eq(id).and(NOTIFICATION.CHANNEL_ID.eq(userId)))
+                .execute();
+        return i == 1;
+    }
 }

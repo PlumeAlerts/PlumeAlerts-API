@@ -2,7 +2,7 @@ package com.plumealerts.api.endpoints.v1.domain.error;
 
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 
-public class ErrorResponse extends Domain {
+public class ErrorResponse implements Domain {
     private final ErrorType type;
     private final String message;
 

@@ -1,6 +1,6 @@
 package com.plumealerts.api.endpoints.v1.domain;
 
-public class DataDomain<T> extends Domain {
+public class DataDomain<T> implements Domain {
     private T data;
 
     private DataDomain() {
