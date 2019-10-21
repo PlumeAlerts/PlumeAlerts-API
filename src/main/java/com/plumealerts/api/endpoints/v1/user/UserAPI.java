@@ -12,6 +12,7 @@ import com.plumealerts.api.endpoints.v1.user.domain.DashboardDomain;
 import com.plumealerts.api.endpoints.v1.user.domain.UserDomain;
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationData;
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationFollow;
+import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationHideDomain;
 import com.plumealerts.api.handler.DataError;
 import com.plumealerts.api.handler.db.DatabaseUser;
 import com.plumealerts.api.handler.user.DashboardType;
@@ -36,7 +37,8 @@ public class UserAPI extends RoutingHandler {
         this.get("/v1/user", this::getUser);
         this.get("/v1/user/dashboard", this::getDashboard);
         this.put("/v1/user/dashboard", this::putDashboard);
-        this.get("/v1/user/notifications", this::getUserNotifications);
+        this.get("/v1/user/notifications", this::getNotification);
+        this.put("/v1/user/notifications", this::putNotification);
     }
 
     private Domain getUser(HttpServerExchange exchange) {
@@ -90,7 +92,7 @@ public class UserAPI extends RoutingHandler {
         }
     }
 
-    private Domain getUserNotifications(HttpServerExchange exchange) {
+    private Domain getNotification(HttpServerExchange exchange) {
         DataError<String> dataError = TokenValidator.getUserIdFromAccessToken(exchange);
         if (dataError.hasError()) {
             return dataError.getError();
@@ -101,9 +103,32 @@ public class UserAPI extends RoutingHandler {
         for (NotificationRecord notification : notifications) {
             if (notification.getType().equalsIgnoreCase("follow")) {
                 TwitchFollowersRecord follow = DatabaseUser.findFollowNotifications(notification.getId());
-                data.add(new NotificationFollow(notification.getUserId(), follow.getFollowerUsername(), notification.getCreatedAt().toEpochSecond(), notification.getType()));
+                data.add(new NotificationFollow(notification.getId(), notification.getType(), notification.getHide(), notification.getUserId(), notification.getCreatedAt().toEpochSecond(), follow.getFollowerUsername()));
             }
         }
         return ResponseUtil.successResponse(exchange, data);
+    }
+
+    private Domain putNotification(HttpServerExchange exchange) {
+        DataError<String> dataError = TokenValidator.getUserIdFromAccessToken(exchange);
+        if (dataError.hasError()) {
+            return dataError.getError();
+        }
+        String userId = dataError.getData();
+
+        try {
+            //TODO Check to see if the user can edit the data notification
+            DataDomain<NotificationHideDomain> data = MAPPER.readValue(exchange.getInputStream(), new TypeReference<DataDomain<NotificationHideDomain>>() {
+            });
+            NotificationHideDomain notification = data.getData();
+
+            if (!DatabaseUser.updateNotification(userId, notification.getId(), notification.isHide())) {
+                return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "DB Issue");
+            }
+            return ResponseUtil.successResponse(exchange, notification);
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Invalid body", e);
+            return ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "Body is invalid");
+        }
     }
 }
