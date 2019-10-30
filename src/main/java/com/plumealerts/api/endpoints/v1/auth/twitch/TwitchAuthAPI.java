@@ -16,7 +16,6 @@ import com.plumealerts.api.handler.db.DatabaseAuth;
 import com.plumealerts.api.handler.db.DatabaseTwitchUser;
 import com.plumealerts.api.handler.db.DatabaseUser;
 import com.plumealerts.api.handler.user.AccessTokenHandler;
-import com.plumealerts.api.handler.user.DashboardType;
 import com.plumealerts.api.ratelimit.future.UserFollower;
 import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
@@ -135,15 +134,14 @@ public class TwitchAuthAPI extends RoutingHandler {
             PlumeAlertsAPI.request().add(new UserFollower(userId, userToken.getAccessToken()));
         } else {
             if (!usersRecord.getId().equalsIgnoreCase(userId)) {
-                //TODO MAJOR ISSUE
-                return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
+                LOGGER.log(Level.SEVERE, "User Id changed from {0} to {1}", new String[]{usersRecord.getId(), userId});
+                return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "User id changed, this isn't possible");
             }
             DatabaseUser.updateUser(user);
             DatabaseTwitchUser.updateAccessToken(userId, userToken);
         }
 
-        DatabaseUser.insertDashboard(userId, DashboardType.CHAT.name(), (short) 7, (short) 0, (short) 3, (short) 20, true);
-        DatabaseUser.insertDashboard(userId, DashboardType.NOTIFICATION.name(), (short) 0, (short) 0, (short) 5, (short) 10, true);
+        DatabaseUser.createDefaultDashboard(userId, userId);
 
         AccessTokenDomain accessToken;
         try {
