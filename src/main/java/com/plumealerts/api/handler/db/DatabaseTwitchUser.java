@@ -35,11 +35,12 @@ public class DatabaseTwitchUser {
                 .fetchOne();
 
         if (validateToken) {
-            Validate validate = null;
+            Validate validate;
             try {
                 validate = TwitchAPI.oAuth2().validate(accessTokenRecord.getAccessToken()).execute();
             } catch (UnsupportedOperationException e) {
                 //TODO Error somehow?
+                return null;
             }
             if (validate == null) {
                 //TODO Probably wrong and add time buffer

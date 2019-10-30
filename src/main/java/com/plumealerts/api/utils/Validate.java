@@ -20,6 +20,16 @@ public class Validate {
         return param.peek();
     }
 
+    public static String getPathParam(HttpServerExchange exchange, String paramName) {
+        Deque<String> param = exchange.getQueryParameters().get(paramName);
+
+        if (param == null) {
+            return null;
+        }
+        return param.peek();
+    }
+
+
     public static boolean isAlphanumericAndLength(String text, int length) {
         return text != null && text.length() == length && StringUtils.isAlphanumeric(text);
     }
