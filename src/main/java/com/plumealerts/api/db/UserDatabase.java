@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDatabase {
+public final class UserDatabase {
 
     private static final String FIND_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
     private static final String FIND_USER_BY_LOGIN = "SELECT id FROM users WHERE lower(login) = lower(?)";
@@ -38,7 +38,7 @@ public class UserDatabase {
             stmt.setString(1, login);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
+                if (rs.next()) {
                     return rs.getString(1);
                 }
             }

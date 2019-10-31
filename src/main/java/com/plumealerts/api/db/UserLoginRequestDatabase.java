@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
-public class UserLoginRequestDatabase {
+public final class UserLoginRequestDatabase {
 
     private static final String FIND_BY_STATE = "SELECT created_at FROM user_login_request WHERE state=?";
     private static final String INSERT_USER_LOGIN_REQUEST = "INSERT INTO user_login_request(state, scopes) VALUES (?, ?)";
@@ -20,7 +20,7 @@ public class UserLoginRequestDatabase {
             stmt.setString(1, state);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
+                if (rs.next()) {
                     return rs.getObject("created_at", OffsetDateTime.class);
                 }
             }

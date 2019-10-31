@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import static com.plumealerts.api.PlumeAlertsAPI.MAPPER;
 
-public class ResponseUtil {
+public final class ResponseUtil {
     private static final Logger LOGGER = Logger.getLogger(ResponseUtil.class.getName());
 
     private ResponseUtil() {

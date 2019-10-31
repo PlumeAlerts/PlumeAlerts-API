@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScopeDatabase {
+public final class ScopeDatabase {
 
     private static final String FIND_SCOPES = "SELECT * FROM scopes";
 

@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 
-public class AccessTokenHandler {
+public final class AccessTokenHandler {
 
     private AccessTokenHandler() {
     }

@@ -13,7 +13,7 @@ import feign.hystrix.HystrixFeign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 
-public class TwitchAPI {
+public final class TwitchAPI {
 
     private static TwitchHelix helixAPI;
     private static TwitchOAuth2 oAuth2API;

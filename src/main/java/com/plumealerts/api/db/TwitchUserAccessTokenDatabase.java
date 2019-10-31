@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
-public class TwitchUserAccessTokenDatabase {
+public final class TwitchUserAccessTokenDatabase {
 
     private static final String FIND_ACCESS_TOKEN = "SELECT * FROM twitch_user_access_token WHERE user_id = ?";
     private static final String INSERT_ACCESS_TOKEN = "INSERT INTO twitch_user_access_token(user_id, access_token, refresh_token, expired_at) VALUES (?,?,?,?)";
@@ -38,7 +38,7 @@ public class TwitchUserAccessTokenDatabase {
             stmt.setString(1, userId);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
+                if (rs.next()) {
                     return new TwitchUserAccessTokenRecord(rs);
                 }
             }

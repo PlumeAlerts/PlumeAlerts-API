@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PermissionDatabase {
+public final class PermissionDatabase {
 
     private static final String FIND_PERMISSION = "SELECT count() FROM user_permission WHERE channel_id=? AND user_id=? AND permission=?";
 
@@ -19,10 +19,8 @@ public class PermissionDatabase {
             stmt.setString(2, userId);
             stmt.setString(3, permission);
             try (ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
-                    if (rs.getInt(1) == 1) {
-                        return true;
-                    }
+                if (rs.next() && rs.getInt(1) == 1) {
+                    return true;
                 }
             }
         } catch (SQLException e) {

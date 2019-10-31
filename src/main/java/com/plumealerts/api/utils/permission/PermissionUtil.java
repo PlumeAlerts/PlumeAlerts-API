@@ -5,7 +5,10 @@ import com.plumealerts.api.db.UserDatabase;
 import com.plumealerts.api.utils.Validate;
 import io.undertow.server.HttpServerExchange;
 
-public class PermissionUtil {
+public final class PermissionUtil {
+
+    private PermissionUtil() {
+    }
 
     /**
      * Returns the token userId if me is used else fetch the id from the username supplied
@@ -15,8 +18,11 @@ public class PermissionUtil {
      * @return The channelId of the request or the userId from the token
      */
     public static String getChannelId(HttpServerExchange exchange, String defaultChannelId) {
-        String username = Validate.getPathParam(exchange, "l");
-        if (username == null || username.equalsIgnoreCase("me")) {
+        String username = Validate.getQueryParam(exchange, "username");
+        if (username == null) {
+            return null;
+        }
+        if (username.equalsIgnoreCase("me")) {
             return defaultChannelId;
         }
 
@@ -32,8 +38,9 @@ public class PermissionUtil {
      * @return If the channelId and userId are the same returns true, else will check the DB to see if the user has permission
      */
     public static boolean hasPermission(String channelId, String userId, Permission permission) {
-        if (channelId.equalsIgnoreCase(userId))
+        if (channelId.equalsIgnoreCase(userId)) {
             return true;
+        }
         return PermissionDatabase.findPermission(channelId, userId, permission.getName());
     }
 }

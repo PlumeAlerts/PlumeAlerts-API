@@ -1,11 +1,10 @@
-package com.plumealerts.api.handler.db;
+package com.plumealerts.api.handler.user;
 
 import com.plumealerts.api.db.DashboardDatabase;
-import com.plumealerts.api.handler.user.DashboardType;
 
-public class DatabaseUser {
+public final class DashboardHandler {
 
-    private DatabaseUser() {
+    private DashboardHandler() {
     }
 
     public static void createDefaultDashboard(String channelId, String userId) {

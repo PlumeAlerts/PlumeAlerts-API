@@ -40,13 +40,19 @@ import static io.undertow.util.Headers.ORIGIN;
  *
  * @author <a href="mailto:ehugonne@redhat.com">Emmanuel Hugonnet</a> (c) 2014 Red Hat, inc.
  */
-public class CorsUtil {
+public final class CorsUtil {
     private static final Logger logger = LoggerFactory.getLogger(CorsUtil.class);
 
     private CorsUtil() {
     }
 
-    public static boolean isCoreRequest(HeaderMap headers) {
+    /**
+     * Checks to see if the request is cors
+     *
+     * @param headers The list of headers sent in the request
+     * @return True if the request headers contains origins or access control headers
+     */
+    public static boolean isCorsRequest(HeaderMap headers) {
         return headers.contains(ORIGIN)
                 || headers.contains(ACCESS_CONTROL_REQUEST_HEADERS)
                 || headers.contains(ACCESS_CONTROL_REQUEST_METHOD);
@@ -103,6 +109,13 @@ public class CorsUtil {
         return allowedOrigin.toString();
     }
 
+    /**
+     * Checks to see if the request is being made on the default port
+     *
+     * @param port     The port the request is being made on
+     * @param protocol The protocol the request is using
+     * @return True if the port and protocol port match else returns false
+     */
     private static boolean isDefaultPort(int port, String protocol) {
         return (("http".equals(protocol) && 80 == port) || ("https".equals(protocol) && 443 == port));
     }
@@ -135,7 +148,13 @@ public class CorsUtil {
         return url;
     }
 
+    /**
+     * Checks to see if a preflight request is being made
+     *
+     * @param exchange The request exchange
+     * @return True if the request is a preflight request
+     */
     public static boolean isPreflightedRequest(HttpServerExchange exchange) {
-        return Methods.OPTIONS.equals(exchange.getRequestMethod()) && isCoreRequest(exchange.getRequestHeaders());
+        return Methods.OPTIONS.equals(exchange.getRequestMethod()) && isCorsRequest(exchange.getRequestHeaders());
     }
 }

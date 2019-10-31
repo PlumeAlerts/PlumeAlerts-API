@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationDatabase {
+public final class NotificationDatabase {
 
     private static final String FIND_NOTIFICATION = "SELECT * FROM notification WHERE channel_id = ? ORDER BY created_at DESC LIMIT 15";
     private static final String UPDATE_NOTIFICATION = "UPDATE notification SET hide=? WHERE id=?";
@@ -40,7 +40,7 @@ public class NotificationDatabase {
             stmt.setLong(1, id);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if(rs.next()) {
+                if (rs.next()) {
                     return new TwitchFollowerRecord(rs);
                 }
             }

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashboardDatabase {
+public final class DashboardDatabase {
 
     private static final String FIND_BY_CHANNNELID_AND_USERID = "SELECT * FROM dashboard WHERE channel_id=? AND user_id=?";
     private static final String INSERT_DASHBOARD = "INSERT INTO dashboard(channel_id, user_id, type, x, y, width, height, show) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING ";

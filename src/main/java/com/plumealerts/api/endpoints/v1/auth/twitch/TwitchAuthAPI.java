@@ -14,9 +14,9 @@ import com.plumealerts.api.endpoints.v1.auth.domain.AccessTokenDomain;
 import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
-import com.plumealerts.api.handler.db.DatabaseAuth;
-import com.plumealerts.api.handler.db.DatabaseUser;
 import com.plumealerts.api.handler.user.AccessTokenHandler;
+import com.plumealerts.api.handler.user.AuthHandler;
+import com.plumealerts.api.handler.user.DashboardHandler;
 import com.plumealerts.api.handler.user.TwitchUserHandler;
 import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
@@ -41,13 +41,13 @@ public class TwitchAuthAPI extends RoutingHandler {
     private String scopes;
 
     public TwitchAuthAPI() {
-        List<String> scopes = ScopeDatabase.getScopes();
-        if (scopes.isEmpty()) {
+        List<String> scopesList = ScopeDatabase.getScopes();
+        if (scopesList.isEmpty()) {
             System.exit(-1);
             //TODO Change to something better
         }
         StringJoiner joiner = new StringJoiner("+");
-        for (String scope : scopes) {
+        for (String scope : scopesList) {
             joiner.add(scope);
         }
         this.scopes = joiner.toString();
@@ -98,13 +98,15 @@ public class TwitchAuthAPI extends RoutingHandler {
             return ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "State must be alphanumerical and 30 characters long");
         }
 
-        if (!DatabaseAuth.isLoginRequestValid(state)) {
+        if (!AuthHandler.isLoginRequestValid(state)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.BAD_REQUEST, "The state is invalid");
         }
 
         Token userToken;
         try {
-            userToken = TwitchAPI.oAuth2().authCode(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, code, Constants.TWITCH_CLIENT_REDIRECT).execute();
+            userToken = TwitchAPI.oAuth2()
+                    .authorizationCode(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, code, Constants.TWITCH_CLIENT_REDIRECT)
+                    .execute();
         } catch (HystrixRuntimeException e) {
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "");
         }
@@ -136,7 +138,7 @@ public class TwitchAuthAPI extends RoutingHandler {
             TwitchUserHandler.updateAccessToken(userId, userToken);
         }
 
-        DatabaseUser.createDefaultDashboard(userId, userId);
+        DashboardHandler.createDefaultDashboard(userId, userId);
 
         AccessTokenDomain accessToken;
         try {

@@ -9,14 +9,13 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 
-public class TokenValidator {
+public final class TokenValidator {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
 
     private TokenValidator() {
     }
-
 
     public static DataError<String> getUserIdFromToken(HttpServerExchange exchange, TokenType type) {
         String bearerToken = TokenValidator.getAuthorizationToken(exchange);

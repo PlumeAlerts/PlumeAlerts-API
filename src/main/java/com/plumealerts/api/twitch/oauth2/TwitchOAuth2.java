@@ -17,18 +17,18 @@ public interface TwitchOAuth2 {
     );
 
     @RequestLine("POST /token?grant_type=refresh_token&client_id={client_id}&client_secret={client_secret}&refresh_token={refresh_token}")
-    HystrixCommand<RefreshToken> refresh(
+    HystrixCommand<RefreshToken> refreshToken(
             @Param("client_id") String clientId,
             @Param("client_secret") String clientSecret,
             @Param("refresh_token") String refreshToken
     );
 
     @RequestLine("POST /token?grant_type=refresh_token&client_id={client_id}&client_secret={client_secret}&refresh_token={refresh_token}&scope={scope}")
-    HystrixCommand<RefreshToken> refresh(
+    HystrixCommand<RefreshToken> refreshToken(
             @Param("client_id") String clientId,
             @Param("client_secret") String clientSecret,
             @Param("refresh_token") String refreshToken,
-            @Param("scope") String scope
+            @Param("scope") String... scope
     );
 
     @RequestLine("POST /revoke?client_id={client_id}&token={token}")
@@ -38,7 +38,7 @@ public interface TwitchOAuth2 {
     );
 
     @RequestLine("POST /token?grant_type=authorization_code&client_id={client_id}&client_secret={client_secret}&code={code}&redirect_uri={redirect_uri}")
-    HystrixCommand<Token> authCode(
+    HystrixCommand<Token> authorizationCode(
             @Param("client_id") String clientId,
             @Param("client_secret") String clientSecret,
             @Param("code") String code,

@@ -10,7 +10,7 @@ import com.plumealerts.api.twitch.oauth2.domain.Validate;
 
 import java.time.OffsetDateTime;
 
-public class TwitchUserHandler {
+public final class TwitchUserHandler {
 
     private TwitchUserHandler() {
     }
@@ -22,8 +22,9 @@ public class TwitchUserHandler {
     public static TwitchUserAccessTokenRecord getAccessToken(String userId, boolean validateToken) {
         TwitchUserAccessTokenRecord token = TwitchUserAccessTokenDatabase.findAccessTokenByUserId(userId);
 
-        if (token == null)
+        if (token == null) {
             return null;
+        }
 
         if (validateToken) {
             Validate validate = TwitchAPI.oAuth2().validate(token.getAccessToken()).execute();
@@ -31,7 +32,7 @@ public class TwitchUserHandler {
                 //TODO Probably wrong and add time buffer
                 if (OffsetDateTime.now().isBefore(token.getExpiredAt())) {
                     RefreshToken refreshToken = TwitchAPI.oAuth2()
-                            .refresh(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, token.getRefreshToken())
+                            .refreshToken(Constants.TWITCH_CLIENT_ID, Constants.TWITCH_CLIENT_SECRET, token.getRefreshToken())
                             .execute();
                     if (refreshToken != null) {
                         return updateAccessToken(userId, refreshToken);
@@ -48,8 +49,9 @@ public class TwitchUserHandler {
 
     public static TwitchUserAccessTokenRecord updateAccessToken(String userId, Token token) {
         TwitchUserAccessTokenRecord accessTokenRecord = getAccessToken(userId, false);
-        if (accessTokenRecord != null)
+        if (accessTokenRecord != null) {
             TwitchAPI.oAuth2().revoke(Constants.TWITCH_CLIENT_ID, accessTokenRecord.getAccessToken()).queue();
+        }
 
         return TwitchUserAccessTokenDatabase.update(userId, token);
     }

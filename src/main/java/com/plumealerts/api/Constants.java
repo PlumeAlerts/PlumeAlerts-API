@@ -18,7 +18,10 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Constants {
+/**
+ * Stores the variables needed to run the API
+ */
+public final class Constants {
 
     public static final String ALGORITHM_IDENTIFIERS = AlgorithmIdentifiers.RSA_USING_SHA512;
 
@@ -50,8 +53,9 @@ public class Constants {
 
     private static String getValueOrDefault(String env, String defaultValue) {
         String value = System.getenv(env);
-        if (value == null)
+        if (value == null) {
             return defaultValue;
+        }
         return value;
     }
 
