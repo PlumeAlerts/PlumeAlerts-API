@@ -1,9 +1,9 @@
 package com.plumealerts.api.utils.permission;
 
-import com.plumealerts.api.handler.db.DatabaseUser;
+import com.plumealerts.api.db.PermissionDatabase;
+import com.plumealerts.api.db.UserDatabase;
 import com.plumealerts.api.utils.Validate;
 import io.undertow.server.HttpServerExchange;
-import org.jooq.Record1;
 
 public class PermissionUtil {
 
@@ -15,15 +15,12 @@ public class PermissionUtil {
      * @return The channelId of the request or the userId from the token
      */
     public static String getChannelId(HttpServerExchange exchange, String defaultChannelId) {
-        String username = Validate.getPathParam(exchange, "username");
+        String username = Validate.getPathParam(exchange, "l");
         if (username == null || username.equalsIgnoreCase("me")) {
             return defaultChannelId;
         }
 
-        Record1<String> otherUserId = DatabaseUser.findUserByUsername(username);
-        if (otherUserId == null)
-            return null;
-        return otherUserId.value1();
+        return UserDatabase.findIdByLogin(username);
     }
 
     /**
@@ -37,6 +34,6 @@ public class PermissionUtil {
     public static boolean hasPermission(String channelId, String userId, Permission permission) {
         if (channelId.equalsIgnoreCase(userId))
             return true;
-        return DatabaseUser.findPermission(channelId, userId, permission.getName());
+        return PermissionDatabase.findPermission(channelId, userId, permission.getName());
     }
 }

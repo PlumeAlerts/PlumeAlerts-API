@@ -5,18 +5,19 @@ import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.plumealerts.api.Constants;
-import com.plumealerts.api.PlumeAlertsAPI;
-import com.plumealerts.api.db.tables.records.ScopesRecord;
-import com.plumealerts.api.db.tables.records.UsersRecord;
+import com.plumealerts.api.db.ScopeDatabase;
+import com.plumealerts.api.db.TwitchUserAccessTokenDatabase;
+import com.plumealerts.api.db.UserDatabase;
+import com.plumealerts.api.db.UserLoginRequestDatabase;
+import com.plumealerts.api.db.record.UserRecord;
 import com.plumealerts.api.endpoints.v1.auth.domain.AccessTokenDomain;
 import com.plumealerts.api.endpoints.v1.auth.twitch.domain.TwitchLogin;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
 import com.plumealerts.api.handler.db.DatabaseAuth;
-import com.plumealerts.api.handler.db.DatabaseTwitchUser;
 import com.plumealerts.api.handler.db.DatabaseUser;
 import com.plumealerts.api.handler.user.AccessTokenHandler;
-import com.plumealerts.api.ratelimit.future.UserFollower;
+import com.plumealerts.api.handler.user.TwitchUserHandler;
 import com.plumealerts.api.twitch.TwitchAPI;
 import com.plumealerts.api.twitch.oauth2.domain.Token;
 import com.plumealerts.api.utils.ResponseUtil;
@@ -24,17 +25,14 @@ import com.plumealerts.api.utils.Validate;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 import org.apache.http.client.utils.URIBuilder;
-import org.jooq.Result;
 import org.jose4j.lang.JoseException;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.plumealerts.api.db.Tables.SCOPES;
-import static com.plumealerts.api.db.Tables.USER_LOGIN_REQUEST;
 
 public class TwitchAuthAPI extends RoutingHandler {
 
@@ -43,14 +41,14 @@ public class TwitchAuthAPI extends RoutingHandler {
     private String scopes;
 
     public TwitchAuthAPI() {
-        Result<ScopesRecord> scopesRecords = PlumeAlertsAPI.dslContext().selectFrom(SCOPES).fetch();
-        if (scopesRecords.isEmpty()) {
+        List<String> scopes = ScopeDatabase.getScopes();
+        if (scopes.isEmpty()) {
             System.exit(-1);
             //TODO Change to something better
         }
         StringJoiner joiner = new StringJoiner("+");
-        for (ScopesRecord scope : scopesRecords) {
-            joiner.add(scope.getScope());
+        for (String scope : scopes) {
+            joiner.add(scope);
         }
         this.scopes = joiner.toString();
         this.get("/v1/auth/twitch/login", this::getLogin);
@@ -74,10 +72,7 @@ public class TwitchAuthAPI extends RoutingHandler {
         ub.addParameter("response_type", "code");
         String url = ub.toString();
 
-        int i = PlumeAlertsAPI.dslContext().insertInto(USER_LOGIN_REQUEST).columns(USER_LOGIN_REQUEST.STATE, USER_LOGIN_REQUEST.SCOPES)
-                .values(state, this.scopes)
-                .execute();
-        if (i != 1) {
+        if (!UserLoginRequestDatabase.insertUserLoginRequest(state, this.scopes)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, null);
         }
 
@@ -127,18 +122,18 @@ public class TwitchAuthAPI extends RoutingHandler {
         User user = users.getUsers().get(0);
         String userId = user.getId();
 
-        UsersRecord usersRecord = DatabaseUser.findUser(userId);
+
+        UserRecord usersRecord = UserDatabase.findById(userId);
         if (usersRecord == null) {
-            DatabaseUser.insertUser(user);
-            DatabaseTwitchUser.setAccessToken(userId, userToken);
-            PlumeAlertsAPI.request().add(new UserFollower(userId, userToken.getAccessToken()));
+            UserDatabase.insertUser(user);
+            TwitchUserAccessTokenDatabase.insertAccessToken(userId, userToken);
         } else {
             if (!usersRecord.getId().equalsIgnoreCase(userId)) {
                 LOGGER.log(Level.SEVERE, "User Id changed from {0} to {1}", new String[]{usersRecord.getId(), userId});
                 return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "User id changed, this isn't possible");
             }
-            DatabaseUser.updateUser(user);
-            DatabaseTwitchUser.updateAccessToken(userId, userToken);
+            UserDatabase.updateUser(user);
+            TwitchUserHandler.updateAccessToken(userId, userToken);
         }
 
         DatabaseUser.createDefaultDashboard(userId, userId);

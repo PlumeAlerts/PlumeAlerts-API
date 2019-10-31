@@ -1,10 +1,13 @@
 package com.plumealerts.api.endpoints.v1.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.plumealerts.api.db.tables.records.DashboardRecord;
-import com.plumealerts.api.db.tables.records.NotificationRecord;
-import com.plumealerts.api.db.tables.records.TwitchFollowersRecord;
-import com.plumealerts.api.db.tables.records.UsersRecord;
+import com.plumealerts.api.db.DashboardDatabase;
+import com.plumealerts.api.db.NotificationDatabase;
+import com.plumealerts.api.db.UserDatabase;
+import com.plumealerts.api.db.record.DashboardRecord;
+import com.plumealerts.api.db.record.NotificationRecord;
+import com.plumealerts.api.db.record.TwitchFollowerRecord;
+import com.plumealerts.api.db.record.UserRecord;
 import com.plumealerts.api.endpoints.v1.domain.DataDomain;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
 import com.plumealerts.api.endpoints.v1.domain.error.ErrorType;
@@ -14,8 +17,6 @@ import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationDat
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationFollow;
 import com.plumealerts.api.endpoints.v1.user.domain.notification.NotificationHideDomain;
 import com.plumealerts.api.handler.DataError;
-import com.plumealerts.api.handler.db.DatabaseUser;
-import com.plumealerts.api.handler.user.DashboardType;
 import com.plumealerts.api.utils.ResponseUtil;
 import com.plumealerts.api.utils.TokenValidator;
 import com.plumealerts.api.utils.permission.Permission;
@@ -36,12 +37,6 @@ public class UserAPI extends RoutingHandler {
     private static final Logger LOGGER = Logger.getLogger(UserAPI.class.getName());
 
     public UserAPI() {
-        this.get("/v1/user", this::getUser);
-        this.get("/v1/user/dashboard", this::getDashboard);
-        this.put("/v1/user/dashboard", this::putDashboard);
-        this.get("/v1/user/notifications", this::getNotification);
-        this.put("/v1/user/notifications", this::putNotification);
-
         this.get("/v1/user/{username}", this::getUser);
         this.get("/v1/user/{username}/dashboard", this::getDashboard);
         this.put("/v1/user/{username}/dashboard", this::putDashboard);
@@ -64,11 +59,11 @@ public class UserAPI extends RoutingHandler {
         if (!PermissionUtil.hasPermission(channelId, userId, Permission.USER)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Don't have permission: " + Permission.USER.getName());
         }
-        UsersRecord user = DatabaseUser.findUser(channelId);
+        UserRecord user = UserDatabase.findById(channelId);
         if (user == null) {
             return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, null);
         }
-        return ResponseUtil.successResponse(exchange, new UserDomain(user.getId(), user.getLogin(), user.getDisplayName(), user.getBeta(), user.getBroadcasterType()));
+        return ResponseUtil.successResponse(exchange, new UserDomain(user.getId(), user.getLogin(), user.getDisplayName(), user.isBeta(), user.getBroadcasterType()));
     }
 
     private Domain getDashboard(HttpServerExchange exchange) {
@@ -84,11 +79,11 @@ public class UserAPI extends RoutingHandler {
         if (!PermissionUtil.hasPermission(channelId, userId, Permission.USER)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Don't have permission: " + Permission.USER.getName());
         }
-        List<DashboardRecord> dashboards = DatabaseUser.findUserDashboard(channelId, userId);
+        List<DashboardRecord> dashboards = DashboardDatabase.findByChannelIdAndUserId(channelId, userId);
         List<DashboardDomain> data = new ArrayList<>();
 
         for (DashboardRecord dashboard : dashboards) {
-            data.add(new DashboardDomain(dashboard.getType(), dashboard.getX(), dashboard.getY(), dashboard.getWidth(), dashboard.getHeight(), dashboard.getShow()));
+            data.add(new DashboardDomain(dashboard.getType(), dashboard.getX(), dashboard.getY(), dashboard.getWidth(), dashboard.getHeight(), dashboard.isShow()));
         }
         return ResponseUtil.successResponse(exchange, data);
     }
@@ -110,8 +105,7 @@ public class UserAPI extends RoutingHandler {
             DataDomain<DashboardDomain> data = MAPPER.readValue(exchange.getInputStream(), new TypeReference<DataDomain<DashboardDomain>>() {
             });
             DashboardDomain dashboard = data.getData();
-            DashboardType type = DashboardType.valueOf(dashboard.getType());
-            if (!DatabaseUser.updateDashboard(channelId, userId, type, dashboard)) {
+            if (!DashboardDatabase.updateDashboard(channelId, userId, dashboard)) {
                 return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "DB Issue");
             }
             return ResponseUtil.successResponse(exchange, dashboard);
@@ -135,13 +129,13 @@ public class UserAPI extends RoutingHandler {
         if (!PermissionUtil.hasPermission(channelId, userId, Permission.NOTIFICATION_VIEW)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Don't have permission: " + Permission.NOTIFICATION_VIEW.getName());
         }
-        List<NotificationRecord> notifications = DatabaseUser.findUserNotifications(channelId);
+        List<NotificationRecord> notifications = NotificationDatabase.getNotifications(channelId);
         List<NotificationData> data = new ArrayList<>();
 
         for (NotificationRecord notification : notifications) {
             if (notification.getType().equalsIgnoreCase("follow")) {
-                TwitchFollowersRecord follow = DatabaseUser.findFollowNotifications(notification.getId());
-                data.add(new NotificationFollow(notification.getId(), notification.getType(), notification.getHide(), notification.getUserId(), notification.getCreatedAt().toEpochSecond(), follow.getFollowerUsername()));
+                TwitchFollowerRecord follow = NotificationDatabase.findFollowNotifications(notification.getId());
+                data.add(new NotificationFollow(notification.getId(), notification.getType(), notification.isHide(), notification.getUserId(), notification.getCreatedAt().toEpochSecond(), follow.getFollowerUsername()));
             }
         }
         return ResponseUtil.successResponse(exchange, data);
@@ -161,10 +155,11 @@ public class UserAPI extends RoutingHandler {
             return ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Don't have permission: " + Permission.NOTIFICATION_EDIT.getName());
         }
         try {
-            DataDomain<NotificationHideDomain> data = MAPPER.readValue(exchange.getInputStream(), new TypeReference<DataDomain<NotificationHideDomain>>() {});
+            DataDomain<NotificationHideDomain> data = MAPPER.readValue(exchange.getInputStream(), new TypeReference<DataDomain<NotificationHideDomain>>() {
+            });
             NotificationHideDomain notification = data.getData();
 
-            if (!DatabaseUser.updateNotification(channelId, notification.getId(), notification.isHide())) {
+            if (!NotificationDatabase.updateNotification(notification.getId(), notification.isHide())) {
                 return ResponseUtil.errorResponse(exchange, ErrorType.INTERNAL_SERVER_ERROR, "DB Issue");
             }
             return ResponseUtil.successResponse(exchange, notification);
