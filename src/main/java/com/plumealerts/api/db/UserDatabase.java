@@ -66,7 +66,7 @@ public final class UserDatabase {
 
     public static boolean updateUser(User user) {
         try (PreparedStatement stmt = PlumeAlertsAPI.connection().prepareStatement(UPDATE_USER)) {
-            stmt.setObject(1, user.getId());
+            stmt.setObject(1, user.getLogin());
             stmt.setString(2, user.getDisplayName());
             stmt.setString(3, user.getBroadcasterType());
             stmt.setString(4, user.getType());

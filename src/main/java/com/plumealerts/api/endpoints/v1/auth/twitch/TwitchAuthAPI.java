@@ -124,7 +124,6 @@ public class TwitchAuthAPI extends RoutingHandler {
         User user = users.getUsers().get(0);
         String userId = user.getId();
 
-
         UserRecord usersRecord = UserDatabase.findById(userId);
         if (usersRecord == null) {
             UserDatabase.insertUser(user);
