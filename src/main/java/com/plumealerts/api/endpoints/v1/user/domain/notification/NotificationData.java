@@ -1,5 +1,7 @@
 package com.plumealerts.api.endpoints.v1.user.domain.notification;
 
+import com.plumealerts.api.db.record.NotificationRecord;
+
 public class NotificationData {
     private final long id;
     private final String type;
@@ -7,12 +9,12 @@ public class NotificationData {
     private final String userId;
     private final long createdAt;
 
-    public NotificationData(long id, String type, boolean hide, String userId, long createdAt) {
-        this.id = id;
-        this.type = type;
-        this.hide = hide;
-        this.userId = userId;
-        this.createdAt = createdAt;
+    public NotificationData(NotificationRecord notification) {
+        this.id = notification.getId();
+        this.type = notification.getType();
+        this.hide = notification.isHide();
+        this.userId = notification.getUserId();
+        this.createdAt = notification.getCreatedAt().toEpochSecond();
     }
 
     public long getId() {
