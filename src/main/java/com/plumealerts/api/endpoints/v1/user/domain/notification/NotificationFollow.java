@@ -6,7 +6,7 @@ public class NotificationFollow extends NotificationData {
     private final String username;
 
     public NotificationFollow(NotificationFollowRecord notification) {
-        super(notification.getId(), notification.getType(), notification.isHide(), notification.getUserId(), notification.getCreatedAt().toEpochSecond());
+        super(notification);
         this.username = notification.getFollowerUsername();
     }
 
