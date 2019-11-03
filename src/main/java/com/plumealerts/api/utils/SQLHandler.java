@@ -6,7 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public class SQLHandler {
+public final class SQLHandler {
+    private SQLHandler() {
+    }
+
     public static String readFile(String filename) {
         try {
             File f = new File(SQLHandler.class.getClassLoader().getResource("db/query/" + filename).getFile());
