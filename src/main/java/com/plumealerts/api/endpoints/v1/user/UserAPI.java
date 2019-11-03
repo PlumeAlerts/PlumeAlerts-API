@@ -5,8 +5,8 @@ import com.plumealerts.api.db.DashboardDatabase;
 import com.plumealerts.api.db.NotificationDatabase;
 import com.plumealerts.api.db.UserDatabase;
 import com.plumealerts.api.db.record.DashboardRecord;
+import com.plumealerts.api.db.record.NotificationFollowRecord;
 import com.plumealerts.api.db.record.NotificationRecord;
-import com.plumealerts.api.db.record.TwitchFollowerRecord;
 import com.plumealerts.api.db.record.UserRecord;
 import com.plumealerts.api.endpoints.v1.domain.DataDomain;
 import com.plumealerts.api.endpoints.v1.domain.Domain;
@@ -129,15 +129,15 @@ public class UserAPI extends RoutingHandler {
         if (!PermissionUtil.hasPermission(channelId, userId, Permission.NOTIFICATION_VIEW)) {
             return ResponseUtil.errorResponse(exchange, ErrorType.UNAUTHORIZED, "Don't have permission: " + Permission.NOTIFICATION_VIEW.getName());
         }
-        List<NotificationRecord> notifications = NotificationDatabase.getNotifications(channelId);
+        List<NotificationRecord> notifications = NotificationDatabase.getNotifications(channelId, new ArrayList<>());
         List<NotificationData> data = new ArrayList<>();
 
         for (NotificationRecord notification : notifications) {
-            if (notification.getType().equalsIgnoreCase("follow")) {
-                TwitchFollowerRecord follow = NotificationDatabase.findFollowNotifications(notification.getId());
-                data.add(new NotificationFollow(notification.getId(), notification.getType(), notification.isHide(), notification.getUserId(), notification.getCreatedAt().toEpochSecond(), follow.getFollowerUsername()));
+            if (notification instanceof NotificationFollowRecord) {
+                data.add(new NotificationFollow((NotificationFollowRecord) notification));
             }
         }
+
         return ResponseUtil.successResponse(exchange, data);
     }
 

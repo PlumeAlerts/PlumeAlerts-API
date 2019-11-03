@@ -1,6 +1,5 @@
 package com.plumealerts.api.endpoints.v1.auth.twitch;
 
-
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
