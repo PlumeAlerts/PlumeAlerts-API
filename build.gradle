@@ -26,7 +26,7 @@ dependencies {
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.11'
 
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.2'
-    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.1.4'
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.2.0'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.9'
 
     compile group: 'com.github.twitch4j', name: 'twitch4j', version: '1.0.0-alpha.17'
