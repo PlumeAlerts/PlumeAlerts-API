@@ -31,7 +31,7 @@ dependencies {
 
     compile group: 'com.github.twitch4j', name: 'twitch4j', version: '1.0.0-alpha.17'
 
-    testImplementation('org.junit.jupiter:junit-jupiter:5.6.0')
+    testImplementation('org.junit.jupiter:junit-jupiter:5.6.1')
 }
 
 jar {
