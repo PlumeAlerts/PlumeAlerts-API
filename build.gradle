@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'io.undertow', name: 'undertow-core', version: '2.1.0.Final'
+    compile group: 'io.undertow', name: 'undertow-core', version: '2.1.1.Final'
     compile group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.7.0'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.13.3'
 
